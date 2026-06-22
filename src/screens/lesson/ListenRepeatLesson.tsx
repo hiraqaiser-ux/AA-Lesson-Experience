@@ -65,7 +65,7 @@ export function ListenRepeatLesson({
   }, [audioState, elapsed]);
 
   const clearRec = () => recInterval.current && clearInterval(recInterval.current);
-  useEffect(() => () => clearRec(), []);
+  useEffect(() => () => { clearRec(); }, []);
 
   const toggleListen = () => {
     if (audioState === "playing") {

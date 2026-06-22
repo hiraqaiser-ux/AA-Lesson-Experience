@@ -45,7 +45,7 @@ export function VideoLessonPlayer() {
         {/* Content */}
         <main className="flex flex-1 flex-col gap-20 p-24">
           <p className="text-sm text-secondary-300">Module 1 › Welcome to Recite Quran</p>
-          <VideoPlayer progress={15} />
+          <VideoPlayer />
           <div className="flex items-center gap-16">
             <h1 className="flex-1 text-xl font-medium text-neutral-0">
               Understanding words with Baa

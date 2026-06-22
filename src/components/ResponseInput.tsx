@@ -20,6 +20,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { Icon } from "./Icon";
+import type { IconName } from "./Icon";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -333,7 +334,7 @@ export function ResponseInput({
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 interface ToolbarIconButtonProps {
-  icon: string;
+  icon: IconName;
   label: string;
   onClick?: () => void;
   disabled?: boolean;
