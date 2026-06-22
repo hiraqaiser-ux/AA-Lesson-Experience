@@ -1,0 +1,119 @@
+/* =============================================================================
+   Athan Academy — Design Tokens
+   GENERATED from the Figma DS variables (file LoggG0aT2WfBhamz54WSxa).
+   This is the SINGLE SOURCE OF TRUTH. Raw hex / px values appear ONLY here.
+   Components and tailwind.config.js reference these variables — never raw hex.
+   ============================================================================= */
+
+:root {
+  /* ---- Brand / Primary (lime) ---- */
+  --c-primary-50: #f7fee7;
+  --c-primary-100: #ecfccb;
+  --c-primary-200: #d9f99d;
+  --c-primary-300: #bef264;
+  --c-primary-400: #a3e635;
+  --c-primary-500: #95eb39;
+  --c-primary-600: #65a30d;
+  --c-primary-700: #4d7c0f;
+  --c-primary-800: #3f6212;
+  --c-primary-900: #365314;
+
+  /* ---- Brand / Secondary (slate) ---- */
+  --c-secondary-50: #f8fafc;
+  --c-secondary-100: #eceef2;
+  --c-secondary-200: #d5d9e2;
+  --c-secondary-300: #b0b8c9;
+  --c-secondary-400: #8591ab;
+  --c-secondary-500: #657392;
+  --c-secondary-600: #515d79;
+  --c-secondary-700: #47516a;
+  --c-secondary-800: #3a4152;
+  --c-secondary-900: #333947;
+  --c-secondary-950: #141b20;
+  --c-secondary-980: #181c26;
+  --c-secondary-1000: #0e1418;
+  --c-secondary-3: #0a1014;       /* Secondary 3 — deep app background */
+
+  /* ---- Neutral ---- */
+  --c-neutral-0: #ffffff;
+  --c-neutral-100: #d7d7d7;
+  --c-neutral-200: #cccccc;
+  --c-neutral-300: #a7a7a7;
+  --c-neutral-400: #8f8f8f;
+  --c-neutral-500: #7a7a7a;
+  --c-neutral-600: #606060;
+  --c-neutral-700: #4d4d4d;
+  --c-neutral-800: #333333;
+  --c-neutral-900: #1a1a1a;
+  --c-neutral-1000: #000000;
+
+  /* ---- Semantic surfaces / text (dark theme) ---- */
+  --c-background: #0d0d0d;        /* Primitive/Neutral/Background */
+  --c-surface: #161616;           /* Primitive/Neutral/Surface */
+  --c-popup-bg: #0a1014;          /* Color/Popup-bg */
+  --c-text-primary: #f1f1f1;      /* Primitive/Neutral/Text Primary */
+  --c-text-secondary: #b3b3b3;    /* Primitive/Neutral/Text Secondary */
+
+  /* ---- Status ---- */
+  --c-success: #07c97b;
+  --c-success-300: #81cf92;
+  --c-success-900: #1c4d27;
+  --c-warning: #e67d37;
+  --c-warning-300: #ffc654;
+  --c-warning-900: #6b4700;
+  --c-error: #ff4d4d;
+  --c-error-300: #f4827e;         /* Primitive/Status/Error/300 */
+  --c-star: #ffd54f;              /* Primitive/Status/Star */
+
+  /* ---- Overlay / glass (alpha baked in) ---- */
+  --c-overlay-white-8: #ffffff14;
+  --c-overlay-white-12: #ffffff1f;
+  --c-overlay-white-40: #ffffff66;
+  --c-overlay-success: #72987a33;  /* completion bar tint — Secondary green @ 20% */
+
+  /* ---- Black scrims for video controls + modal backdrop ----
+     NOT present in the Figma DS. Derived from Neutral/1000 (#000000) with alpha.
+     Flagged in the build report — confirm or replace with a real token. */
+  --c-overlay-black-40: #00000066;
+  --c-overlay-black-55: #0000008c;
+  --c-overlay-black-70: #000000b3;
+
+  /* ---- Avatar identity colors (discussion users) ----
+     From the Discussion design; not formal DS tokens. Orange reuses Status/Warning. */
+  --c-avatar-teal: #008d90;
+  --c-avatar-red: #ff5044;
+  --c-avatar-blue: #15a1ff;
+
+  /* ---- Spacing (Primitive/Spacing/* — all 4px multiples) ---- */
+  --space-0: 0px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-36: 36px;
+  --space-40: 40px;
+  --space-44: 44px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  /* ---- Typography sizes (Primitive/Typography/Size/*) ---- */
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+  --font-lg-2: 20px;
+  --font-xl: 24px;
+  /* 2xl is NOT a DS typography token — added for display headings (4px multiple). */
+  --font-2xl: 28px;
+
+  /* ---- Radius ---- NOTE: radius is NOT defined as a DS token in Figma.
+     Values are 4px multiples (pill = 100). Flagged in the build report. */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 100px;
+}
