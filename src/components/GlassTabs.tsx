@@ -30,7 +30,7 @@ export function GlassTabs({
               dense ? "px-16 py-8 text-md" : "px-12 py-8 text-md sm:px-16 sm:text-lg-2",
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500",
               isActive
-                ? "bg-overlay-white-12 border border-overlay-white-40 text-neutral-0 backdrop-blur-md"
+                ? "bg-overlay-white-12 text-neutral-0 backdrop-blur-md"
                 : "text-secondary-400 hover:bg-overlay-white-8 hover:text-neutral-0",
             ].join(" ")}
           >

@@ -35,7 +35,7 @@ export function LessonsScreen({
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-16 pt-24 md:px-40">
+    <div className="mx-auto w-full px-16 pt-24 md:px-40 lg:px-[92px]">
       <div className="flex flex-col gap-24 rounded-lg border-0 p-0 md:gap-32 md:border md:border-secondary-900 md:p-40">
         {/* Progress header — only for enrolled learners who have made progress */}
         {enrolled && hasProgress && (
@@ -60,7 +60,10 @@ export function LessonsScreen({
               chapters={section.chapters}
               onSelectLesson={handleOpenLesson}
               hideStatus={!enrolled}
-              locked={!enrolled}
+              // Visitors: only the last two sections are locked. Section 1 stays
+              // an open accordion, but its lessons aren't clickable (enroll to start).
+              locked={!enrolled && i >= SECTIONS.length - 2}
+              disableLessons={!enrolled}
             />
           ))}
         </div>

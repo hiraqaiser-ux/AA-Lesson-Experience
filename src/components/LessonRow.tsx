@@ -22,6 +22,8 @@ export interface LessonRowProps {
   onClick?: () => void;
   /** Visitor view: hide the status icon (no progress for visitors). */
   hideStatus?: boolean;
+  /** Visitor's unlocked section: row is shown but not clickable. */
+  disabled?: boolean;
 }
 
 /** A single lesson inside a chapter (Video / Practice / Assignment / Audio …). */
@@ -35,6 +37,7 @@ export function LessonRow({
   label,
   onClick,
   hideStatus = false,
+  disabled = false,
 }: LessonRowProps) {
   const meta = TYPE_META[type];
   const rowIcon = icon ?? meta.icon;
@@ -43,9 +46,11 @@ export function LessonRow({
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className={[
         "flex w-full items-center gap-16 rounded-sm border-b border-neutral-900 px-12 py-12 text-left last:border-0",
-        "transition-colors duration-300 ease-in-out hover:bg-overlay-white-8",
+        "transition-colors duration-300 ease-in-out",
+        disabled ? "cursor-default" : "hover:bg-overlay-white-8",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500",
         status === "locked" ? "opacity-55" : "",
       ].join(" ")}

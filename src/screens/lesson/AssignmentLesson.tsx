@@ -15,10 +15,10 @@ import { AudioMessage } from "../../components/chat/AudioMessage";
 import { Icon } from "../../components/Icon";
 import { getLesson } from "../../data/lessons";
 
-// Assignment content spans the full width of the main column (per design).
-// Assignment header / content / composer share one left-aligned 70% column on
-// desktop (full width on mobile); the Next button sits to the right of it.
-const COL = "w-full lg:w-[70%]";
+// Assignment content (instructions + media + conversation) sits in a left-aligned
+// 70% column on desktop (full width on mobile). The header spans full width so the
+// Feedback button right-aligns to the container, and the answer composer in the
+// footer spans full width with the Next button pushed to the far right.
 
 interface Msg {
   id: number;
@@ -146,7 +146,7 @@ export function AssignmentLesson({
               </span>
             </div>
           )}
-          <div className={`${COL} flex items-start justify-between gap-16`}>
+          <div className="flex w-full items-start justify-between gap-16">
             <div className="flex flex-col gap-8">
               <span className="text-xs font-medium uppercase tracking-wide text-secondary-300">
                 {eyebrow}

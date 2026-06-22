@@ -139,7 +139,7 @@ export function CourseDetail({
       />
 
       {/* Hero */}
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-24 px-16 pt-24 md:gap-32 md:px-40 md:pt-32">
+      <div className="mx-auto flex w-full flex-col gap-24 px-16 pt-24 md:gap-32 md:px-40 md:pt-32 lg:px-[92px]">
         <div className="flex flex-col gap-24 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-16 md:max-w-[520px]">
             <span className="flex items-center gap-8">
@@ -185,7 +185,7 @@ export function CourseDetail({
         ref={tabsRef}
         className="sticky top-[63px] z-30 border-b border-secondary-900 bg-secondary-3 lg:static lg:top-auto lg:z-auto lg:border-b-0 lg:bg-transparent"
       >
-        <div className="mx-auto flex w-full max-w-[1200px] justify-center px-16 py-40 md:px-40">
+        <div className="mx-auto flex w-full justify-center px-16 py-40 md:px-40 lg:px-[92px]">
           <GlassTabs tabs={TABS} active={tab} onChange={setTab} dot="Discussions" />
         </div>
       </div>
@@ -201,7 +201,7 @@ export function CourseDetail({
           onUnenroll={onUnenroll}
         />
       ) : (
-        <div className="mx-auto w-full max-w-[1200px] px-16 pt-24 md:px-40">
+        <div className="mx-auto w-full px-16 pt-24 md:px-40 lg:px-[92px]">
           <div className="rounded-lg p-0 md:border md:border-secondary-900 md:p-40">
             <div className="flex flex-col gap-40 md:flex-row md:gap-48">
               {/* Left sub-nav — desktop scroll-spy aid; hidden on mobile */}
@@ -340,7 +340,7 @@ export function CourseDetail({
             : "pointer-events-none translate-y-16 opacity-0",
         ].join(" ")}
       >
-        <div className="rounded-full bg-secondary-950 px-8 py-4 shadow-lg">
+        <div className="rounded-full bg-overlay-white-8 px-8 py-4 shadow-lg backdrop-blur-md">
           <GlassTabs tabs={TABS} active={tab} onChange={setTab} dense dot="Discussions" />
         </div>
       </div>

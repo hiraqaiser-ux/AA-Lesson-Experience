@@ -15,6 +15,8 @@ export interface SectionGroupProps {
   hideStatus?: boolean;
   /** Visitor view: section is locked — shows a lock button, a Secondary/980 card, and can't expand. */
   locked?: boolean;
+  /** Visitor's unlocked section: lessons are shown but not clickable. */
+  disableLessons?: boolean;
 }
 
 /** Section card grouping chapter cards. One chapter open at a time; locked for visitors. */
@@ -28,6 +30,7 @@ export function SectionGroup({
   onSelectLesson,
   hideStatus = false,
   locked = false,
+  disableLessons = false,
 }: SectionGroupProps) {
   const isOpen = open && !locked;
   return (
@@ -77,6 +80,9 @@ export function SectionGroup({
               chapterIdx={j}
               onSelectLesson={onSelectLesson}
               hideStatus={hideStatus}
+              disableLessons={disableLessons}
+              // Visitor (lessons disabled): keep only the first chapter expanded.
+              defaultOpen={disableLessons ? j === 0 : undefined}
             />
           ))}
         </div>

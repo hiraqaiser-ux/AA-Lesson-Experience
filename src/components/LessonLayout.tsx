@@ -149,7 +149,7 @@ export function LessonLayout({
           {/* Sticky footer — Previous (mobile only) / Next around the action */}
           {variant === "assignment" ? (
             <div className="flex shrink-0 flex-col gap-12 pb-24 pt-8 lg:flex-row lg:items-center">
-              <div className="lg:order-1 lg:w-[70%]">{action}</div>
+              <div className="lg:order-1 lg:flex-1">{action}</div>
               <div className="flex items-center gap-12 lg:contents">
                 {!hidePrev && prevBtn("flex-1 lg:hidden")}
                 {!hideNext && nextBtn("flex-1 lg:order-2 lg:flex-none")}

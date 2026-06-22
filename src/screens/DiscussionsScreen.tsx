@@ -273,7 +273,7 @@ export function DiscussionsScreen({
   ];
 
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-16 pt-24 md:px-40">
+    <div className="mx-auto w-full px-16 pt-24 md:px-40 lg:px-[92px]">
       <div className="flex flex-col gap-32 rounded-lg p-0 md:gap-40 md:border md:border-secondary-900 md:p-40">
         {/* Posts + right rail */}
         <div className="flex flex-col gap-32 lg:flex-row lg:gap-64">

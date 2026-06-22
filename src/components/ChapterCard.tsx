@@ -15,6 +15,10 @@ export interface ChapterCardProps {
   onSelectLesson?: (lessonId: string) => void;
   /** Visitor view: hide the chapter status badge + per-lesson status icons. */
   hideStatus?: boolean;
+  /** Visitor's unlocked section: lessons are shown but not clickable. */
+  disableLessons?: boolean;
+  /** Override the open-on-mount default (otherwise: open unless completed). */
+  defaultOpen?: boolean;
 }
 
 /**
@@ -34,8 +38,10 @@ export function ChapterCard({
   chapterIdx = 0,
   onSelectLesson,
   hideStatus = false,
+  disableLessons = false,
+  defaultOpen,
 }: ChapterCardProps) {
-  const [open, setOpen] = useState(status !== "completed");
+  const [open, setOpen] = useState(defaultOpen ?? status !== "completed");
 
   return (
     <div className="flex flex-col gap-16 rounded-md border border-secondary-900 p-16 transition duration-300 ease-in-out hover:border-secondary-800">
@@ -76,7 +82,12 @@ export function ChapterCard({
               key={i}
               {...l}
               hideStatus={hideStatus}
-              onClick={() => onSelectLesson?.(`${sectionIdx}-${chapterIdx}-${i}`)}
+              disabled={disableLessons}
+              onClick={
+                disableLessons
+                  ? undefined
+                  : () => onSelectLesson?.(`${sectionIdx}-${chapterIdx}-${i}`)
+              }
             />
           ))}
         </div>

@@ -14,7 +14,7 @@ export type IconName =
   | "x" | "arrow-up" | "arrow-right" | "menu"
   | "loader" | "rotate-cw" | "rotate-ccw" | "mic-off"
   | "heart" | "message-circle" | "message-circle-plus" | "info" | "calendar" | "clock"
-  | "more-vertical" | "edit" | "trash" | "flag" | "pin" | "smile";
+  | "more-vertical" | "edit" | "trash" | "flag" | "pin" | "smile" | "instagram";
 
 const PATHS: Record<IconName, string> = {
   play: "M6 3l14 9-14 9V3z",
@@ -73,6 +73,8 @@ const PATHS: Record<IconName, string> = {
   flag: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7",
   pin: "M12 17v5M9 4h6l-1 6 3 3H7l3-3z",
   smile: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01",
+  instagram:
+    "M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zM16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01",
 };
 
 const SOLID: IconName[] = ["play", "pause", "square", "star", "more-vertical"];
