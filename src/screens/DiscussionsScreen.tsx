@@ -14,6 +14,7 @@ import { PostDetailModal } from "../components/discussion/PostDetailModal";
 import { EnrollPrompt } from "../components/discussion/EnrollPrompt";
 import { CreatePostBox } from "../components/discussion/CreatePostBox";
 import { PostComposer } from "../components/discussion/PostComposer";
+import { EmptyDiscussions } from "../components/discussion/EmptyDiscussions";
 import { ActionMenu } from "../components/ActionMenu";
 import { BottomSheet } from "../components/BottomSheet";
 import { EditPostDialog, DeletePostDialog, ReportPostDialog } from "../components/discussion/PostDialogs";
@@ -286,21 +287,25 @@ export function DiscussionsScreen({
                 <CreatePostBox enrolled={false} onCreate={createPost} onRequireEnroll={requireEnroll} />
               ))}
 
-            <div className="flex flex-col">
-              {posts.map((post, i) => (
-                <div key={post.id} className="flex flex-col">
-                  {i > 0 && <hr className="my-32 border-0 border-t border-secondary-950" />}
-                  <PostCard
-                    post={post}
-                    onOpen={() => openPostView(post)}
-                    liked={likedPosts.has(post.id)}
-                    onLike={() => (enrolled ? toggleLike(post.id) : requireEnroll())}
-                    onComment={() => (enrolled ? openPostView(post) : requireEnroll())}
-                    onUnpin={() => togglePin(post.id)}
-                    menuItems={enrolled ? menuFor(post) : null}
-                  />
-                </div>
-              ))}
+            <div className="flex flex-1 flex-col">
+              {posts.length === 0 ? (
+                <EmptyDiscussions enrolled={enrolled} />
+              ) : (
+                posts.map((post, i) => (
+                  <div key={post.id} className="flex flex-col">
+                    {i > 0 && <hr className="my-32 border-0 border-t border-secondary-950" />}
+                    <PostCard
+                      post={post}
+                      onOpen={() => openPostView(post)}
+                      liked={likedPosts.has(post.id)}
+                      onLike={() => (enrolled ? toggleLike(post.id) : requireEnroll())}
+                      onComment={() => (enrolled ? openPostView(post) : requireEnroll())}
+                      onUnpin={() => togglePin(post.id)}
+                      menuItems={enrolled ? menuFor(post) : null}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
