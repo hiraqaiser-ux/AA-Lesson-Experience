@@ -31,7 +31,7 @@ export const COURSE = {
 
 export const SECTIONS: Section[] = [
   {
-    title: "Section 1: Understanding the basic Arabic words",
+    title: "Week 1: Understanding the basic Arabic words",
     count: "3 chapters",
     chapters: [
       {
@@ -58,7 +58,7 @@ export const SECTIONS: Section[] = [
     ],
   },
   {
-    title: "Section 2: Learning first five words",
+    title: "Week 2: Learning first five words",
     count: "3 chapters",
     chapters: [
       {
@@ -72,7 +72,7 @@ export const SECTIONS: Section[] = [
     ],
   },
   {
-    title: "Section 3: Putting it together",
+    title: "Week 3: Putting it together",
     count: "3 chapters",
     chapters: [
       {
@@ -108,7 +108,7 @@ export interface SidebarLesson {
 }
 export const PLAYER_NAV: { section: string; lessons: SidebarLesson[] }[] = [
   {
-    section: "Section 1: Understanding the basic Arabic words",
+    section: "Week 1: Understanding the basic Arabic words",
     lessons: [
       { title: "Welcome to the lesson", meta: "Video · 5 min", type: "video", state: "completed" },
       { title: "Understanding words with Baa", meta: "Video · 12 min", type: "video", state: "active" },
@@ -117,7 +117,7 @@ export const PLAYER_NAV: { section: string; lessons: SidebarLesson[] }[] = [
     ],
   },
   {
-    section: "Section 2: Learning first five words",
+    section: "Week 2: Learning first five words",
     lessons: [
       { title: "Introduction to letters", meta: "Video · 6 min", type: "video", state: "locked" },
     ],

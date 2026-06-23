@@ -89,7 +89,7 @@ export function LessonLayout({
   const pos = lesson ? Math.max(0, chapterLessons.findIndex((l) => l.id === lesson.id)) : 0;
   const pct = chapterLessons.length ? ((pos + 1) / chapterLessons.length) * 100 : 0;
 
-  const sectionNo = lesson?.sectionTitle?.split(":")[0] ?? "Section 1";
+  const sectionNo = lesson?.sectionTitle?.split(":")[0] ?? "Week 1";
   const sectionName =
     lesson?.sectionTitle?.split(":").slice(1).join(":").trim() ?? "Understanding the basic Arabic words";
 
