@@ -13,7 +13,7 @@ import { ResponseInput, ResponseInputState } from "../../components/ResponseInpu
 import { ChatMessage } from "../../components/chat/ChatMessage";
 import { AudioMessage } from "../../components/chat/AudioMessage";
 import { Icon } from "../../components/Icon";
-import { getLesson } from "../../data/lessons";
+import { getLesson, lessonLabel } from "../../data/lessons";
 
 // Assignment content (instructions + media + conversation) sits in a left-aligned
 // 70% column on desktop (full width on mobile). The header spans full width so the
@@ -45,7 +45,14 @@ export function AssignmentLesson({
   onBack: () => void;
 }) {
   const lesson = getLesson(activeId);
-  const isAudio = lesson?.icon === "audio-waveform";
+  // Assignment subtype — derived from the lesson label (the single source of truth):
+  // "Image Assignment" → image, "Text Assignment" → text, "Audio Assignment" → audio.
+  const label = lesson ? lessonLabel(lesson) : "";
+  const kind: "image" | "text" | "audio" = /audio/i.test(label)
+    ? "audio"
+    : /text/i.test(label)
+      ? "text"
+      : "image";
 
   const [value, setValue] = useState("");
   const [composerState, setComposerState] = useState<ResponseInputState>("default");
@@ -72,18 +79,23 @@ export function AssignmentLesson({
     });
   };
 
-  const eyebrow = isAudio ? "ASSIGNMENT · AUDIO" : "ASSIGNMENT · IMAGE";
-  // Image assignment's screen heading differs from its sidebar lesson name
-  // ("Describe what you see") per design — the heading reads "Read what you see".
-  const title = isAudio ? lesson?.title ?? "Submit your recitation" : "Read what you see";
-  const instructions = isAudio
-    ? "Read the passage below and record yourself reciting it with correct Tajweed."
-    : "Look closely at the image and describe what you see in Arabic. Mention at least three things.";
-  // Arabic passage the learner recites (audio assignment) — shown inside the
+  // Eyebrow descriptor derives from the lesson label so it stays in sync with the
+  // sidebar / Lessons list (e.g. "Text Assignment" → "ASSIGNMENT · TEXT").
+  const descriptor = label.replace(/\s*assignment\s*/i, "").trim().toUpperCase();
+  const eyebrow = `ASSIGNMENT · ${descriptor || kind.toUpperCase()}`;
+  // Text assignment keeps its own sidebar name as the heading; image & audio read
+  // "Read what you see" per design.
+  const title = kind === "text" ? lesson?.title ?? "Submit your recitation" : "Read what you see";
+  const instructions =
+    kind === "text"
+      ? "Read the passage below and record yourself reciting it with correct Tajweed."
+      : "Look closely at the image and describe what you see in Arabic. Mention at least three things.";
+  // Arabic passage the learner recites (text assignment) — shown inside the
   // Instructions card per Figma frame 42721:54407.
-  const versePassage = isAudio
-    ? "ابطترسا ھ ج ک ل ج ف ئ ت ی ہپ پ ل ک ھ ر ت ع و ا د ا  ابطترسا ھ ج ک ل ج ف ئ ت ی ہپ پ ل ک ھ ر ت ع و ا د ا ابطترسا ھ ج ک ل ج ف ئ ت ی ہپ پ ل ک ھ ر ت ع و ا د ا  ابطترسا ھ ج ک ل ج ف ئ ت ی."
-    : undefined;
+  const versePassage =
+    kind === "text"
+      ? "ابطترسا ھ ج ک ل ج ف ئ ت ی ہپ پ ل ک ھ ر ت ع و ا د ا  ابطترسا ھ ج ک ل ج ف ئ ت ی ہپ پ ل ک ھ ر ت ع و ا د ا ابطترسا ھ ج ک ل ج ف ئ ت ی ہپ پ ل ک ھ ر ت ع و ا د ا  ابطترسا ھ ج ک ل ج ف ئ ت ی."
+      : undefined;
 
   const add = (m: Omit<Msg, "id">) => setMessages((p) => [...p, { ...m, id: nextId.current++ }]);
 
@@ -186,29 +198,30 @@ export function AssignmentLesson({
       }
     >
       <div className="flex w-full flex-col gap-16 lg:w-[70%]">
-        {/* Instructions */}
-        <div className="flex flex-col gap-8 rounded-md bg-secondary-950 p-16">
-          <span className="text-sm font-medium text-secondary-300">Instructions</span>
-          <p className="text-md text-text-primary">{instructions}</p>
-          {versePassage && (
-            <p
-              dir="rtl"
-              lang="ur"
-              className="text-right text-lg-2 font-semibold leading-[40px] text-neutral-0"
-            >
-              {versePassage}
-            </p>
-          )}
-        </div>
-
-        {/* Assignment media — the passage image (audio: 234×110 per frame, image: 390 wide) */}
-        {isAudio ? (
-          <img
-            src="/assignment-arabic.png"
-            alt="Passage to recite"
-            className="h-[110px] w-[234px] max-w-full rounded-sm object-cover"
-          />
+        {/* Audio assignment — the prompt is the teacher's recorded question. */}
+        {kind === "audio" ? (
+          <ChatMessage sender="teacher" name="Abdul Haseeb" time="Oct 24, 3:30 PM" showTeacherBadge>
+            <AudioMessage durationSec={50} />
+          </ChatMessage>
         ) : (
+          /* Instructions — image & text assignments. */
+          <div className="flex flex-col gap-8 rounded-md bg-secondary-950 p-16">
+            <span className="text-sm font-medium text-secondary-300">Instructions</span>
+            <p className="text-md text-text-primary">{instructions}</p>
+            {versePassage && (
+              <p
+                dir="rtl"
+                lang="ur"
+                className="text-right text-lg-2 font-semibold leading-[40px] text-neutral-0"
+              >
+                {versePassage}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Assignment media — image assignment only. */}
+        {kind === "image" && (
           <img
             src="/assignment-arabic.png"
             alt="Arabic text to describe"
