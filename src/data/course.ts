@@ -49,8 +49,8 @@ export const SECTIONS: Section[] = [
         desc: "4 lessons · 2 assignments",
         status: "pending",
         lessons: [
-          { title: "Match the correct Sound", type: "practice", icon: "headphones", label: "Audio MCQ", time: "12 min", status: "completed" },
-          { title: "Listen and repeat", type: "practice", icon: "mic", label: "Audio MCQ", time: "8 min", status: "pending" },
+          { title: "Match the correct Sound", type: "practice", time: "12 min", status: "completed" },
+          { title: "Listen and repeat", type: "practice", time: "8 min", status: "pending" },
           { title: "Submit your recitition", type: "assignment", icon: "audio-waveform", label: "Text Assignment", time: "15 min", status: "pending" },
           { title: "Submit your answer", type: "assignment", icon: "audio-waveform", label: "Audio Assignment", time: "15 min", status: "pending" },
         ],

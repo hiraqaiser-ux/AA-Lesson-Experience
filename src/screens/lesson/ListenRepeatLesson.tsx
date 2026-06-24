@@ -30,10 +30,12 @@ export function ListenRepeatLesson({
   activeId,
   onNavigate,
   onBack,
+  onLogout,
 }: {
   activeId: string;
   onNavigate: (id: string) => void;
   onBack: () => void;
+  onLogout?: () => void;
 }) {
   const [phase, setPhase] = useState<"listen" | "record">("listen");
   const [audioState, setAudioState] = useState<AudioPlayState>("idle");
@@ -103,7 +105,7 @@ export function ListenRepeatLesson({
   };
 
   return (
-    <LessonLayout activeId={activeId} onNavigate={onNavigate} onBack={onBack}>
+    <LessonLayout activeId={activeId} onNavigate={onNavigate} onBack={onBack} onLogout={onLogout}>
       <div className="mx-auto flex w-full max-w-[760px] flex-col items-center gap-16 pt-8 text-center">
         <span className="text-xs font-medium uppercase tracking-wide text-secondary-300">
           {phase === "listen" ? "Listen & Repeat" : "Speak & Practice"}

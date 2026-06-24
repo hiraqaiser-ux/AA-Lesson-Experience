@@ -17,11 +17,13 @@ export function PostDetailPage({
   onBack,
   enrolled,
   onEnroll,
+  onLogout,
 }: {
   post: Post;
   onBack: () => void;
   enrolled: boolean;
   onEnroll: () => void;
+  onLogout?: () => void;
 }) {
   const [showEnroll, setShowEnroll] = useState(false);
   const requireEnroll = () => {
@@ -34,7 +36,7 @@ export function PostDetailPage({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-secondary-3">
-      <NavBar userName="Usman" onHome={onBack} visitor={!enrolled} onEnroll={enroll} />
+      <NavBar userName="Hira" onHome={onBack} visitor={!enrolled} onEnroll={enroll} onLogout={onLogout} />
 
       <div className="mx-auto flex w-full min-h-0 max-w-[1200px] flex-1 md:px-24">
         <PostDetailContent

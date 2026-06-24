@@ -129,9 +129,10 @@ export function CourseDetail({
   return (
     <div className={`min-h-full bg-secondary-3 ${!enrolled ? "pb-[120px] lg:pb-0" : ""}`}>
       <NavBar
-        userName="Usman"
+        userName="Hira"
         visitor={!enrolled}
         onEnroll={onEnroll}
+        onLogout={onUnenroll}
         onHome={() => {
           setTab("About");
           window.scrollTo({ top: 0, behavior: "smooth" });

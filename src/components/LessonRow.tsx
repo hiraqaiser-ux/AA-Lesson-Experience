@@ -30,7 +30,6 @@ export interface LessonRowProps {
 export function LessonRow({
   title,
   type,
-  time,
   status,
   thumbnail = false,
   icon,
@@ -64,7 +63,7 @@ export function LessonRow({
         <span className="line-clamp-2 text-lg font-medium text-neutral-0">{title}</span>
         <span className="flex items-center gap-8 text-md text-secondary-300">
           <Icon name={rowIcon} size={20} />
-          {rowLabel} · {time}
+          {rowLabel}
         </span>
       </span>
       {!hideStatus && <StatusIcon status={status} size={24} />}

@@ -9,6 +9,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { LessonLayout } from "../../components/LessonLayout";
+import { FeedbackButton } from "../../components/FeedbackButton";
 import { ResponseInput, ResponseInputState } from "../../components/ResponseInput";
 import { ChatMessage } from "../../components/chat/ChatMessage";
 import { AudioMessage } from "../../components/chat/AudioMessage";
@@ -39,10 +40,12 @@ export function AssignmentLesson({
   activeId,
   onNavigate,
   onBack,
+  onLogout,
 }: {
   activeId: string;
   onNavigate: (id: string) => void;
   onBack: () => void;
+  onLogout?: () => void;
 }) {
   const lesson = getLesson(activeId);
   // Assignment subtype — derived from the lesson label (the single source of truth):
@@ -107,7 +110,7 @@ export function AssignmentLesson({
       // clear the pending attachment WITHOUT revoking it (the bubble still uses it).
       add({
         sender: "student",
-        name: "Usman",
+        name: "Hira",
         time: "Just now",
         kind: "image",
         imageUrl: attachment.url,
@@ -115,7 +118,7 @@ export function AssignmentLesson({
       });
       setAttachment(null);
     } else {
-      add({ sender: "student", name: "Usman", time: "Just now", kind: "text", text: caption });
+      add({ sender: "student", name: "Hira", time: "Just now", kind: "text", text: caption });
     }
     setValue("");
     // Teacher replies with an audio message, then marks the assignment complete.
@@ -140,6 +143,7 @@ export function AssignmentLesson({
       activeId={activeId}
       onNavigate={onNavigate}
       onBack={onBack}
+      onLogout={onLogout}
       variant="assignment"
       header={
         <>
@@ -165,12 +169,7 @@ export function AssignmentLesson({
               </span>
               <h1 className="text-xl font-semibold text-neutral-0">{title}</h1>
             </div>
-            <button
-              type="button"
-              className="shrink-0 rounded-full border border-secondary-800 px-16 py-8 text-sm font-medium text-neutral-0 hover:bg-overlay-white-8"
-            >
-              Feedback
-            </button>
+            <FeedbackButton />
           </div>
         </>
       }
@@ -189,7 +188,7 @@ export function AssignmentLesson({
             setComposerState("recording");
           }}
           onStopRecording={() => {
-            add({ sender: "student", name: "Usman", time: "Just now", kind: "audio", durationSec: Math.max(3, recSecs) });
+            add({ sender: "student", name: "Hira", time: "Just now", kind: "audio", durationSec: Math.max(3, recSecs) });
             setComposerState("default");
           }}
           recordingTime={fmt(recSecs)}

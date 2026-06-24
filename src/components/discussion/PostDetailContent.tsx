@@ -35,7 +35,7 @@ export function PostDetailContent({
     const text = value.trim();
     if (!text) return;
     setComments((c) => [
-      { id: `new-${c.length}`, name: "Usman", initials: "U", color: "blue", time: "Just now", text, likes: 0 },
+      { id: `new-${c.length}`, name: "Hira", initials: "H", color: "blue", time: "Just now", text, likes: 0 },
       ...c,
     ]);
     setValue("");

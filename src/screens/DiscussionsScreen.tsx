@@ -20,7 +20,6 @@ import { BottomSheet } from "../components/BottomSheet";
 import { EditPostDialog, DeletePostDialog, ReportPostDialog } from "../components/discussion/PostDialogs";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import { POSTS, type Post } from "../data/discussions";
-import { COURSE } from "../data/course";
 
 const SCHOOLS = [
   { name: "Arabic Calligraphy for Beginners", instructor: "Shanza Syed", image: "/instructor-shanza.png", duration: "3 weeks" },
@@ -28,85 +27,7 @@ const SCHOOLS = [
   { name: "Homeschooling with Purpose", instructor: "Dalia Moghdad", image: "/instructor-dalia.png", duration: "3 weeks" },
 ];
 
-/** Right-hand course card — "Enroll Now" before enrolling, "Continue Learning" after. */
-function CourseSideCard({
-  enrolled,
-  onEnroll,
-  onContinue,
-}: {
-  enrolled: boolean;
-  onEnroll: () => void;
-  onContinue: () => void;
-}) {
-  return (
-    <div
-      className="flex flex-col gap-20 rounded-lg border border-secondary-800 p-20 backdrop-blur-md"
-      style={{
-        backgroundImage:
-          "linear-gradient(138deg, rgba(20,27,32,0.2) 0%, rgba(106,121,144,0.2) 98%)",
-      }}
-    >
-      <div className="flex flex-col gap-8">
-        {enrolled ? (
-          <span className="text-md text-secondary-300">{COURSE.school}</span>
-        ) : (
-          <span className="text-xs font-bold uppercase tracking-wide text-secondary-300">
-            {COURSE.school}
-          </span>
-        )}
-        <span
-          className={
-            enrolled
-              ? "text-[32px] font-extrabold leading-[35px] text-neutral-0"
-              : "text-xl font-extrabold leading-[1.3] text-neutral-0"
-          }
-        >
-          Learn to Recite Quran in 12 weeks
-        </span>
-      </div>
-
-      {enrolled ? (
-        <>
-          <div className="flex flex-col gap-12">
-            <div className="h-8 w-full overflow-hidden rounded-full bg-secondary-400">
-              <div className="h-full rounded-full bg-primary-500" style={{ width: "25%" }} />
-            </div>
-            <p className="text-md text-secondary-300">{COURSE.progressLabel}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onContinue}
-            className="flex h-48 items-center justify-center rounded-full bg-primary-500 px-20 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
-          >
-            Continue Learning
-          </button>
-        </>
-      ) : (
-        <>
-          <div className="flex flex-col gap-12">
-            <span className="flex items-center gap-8 text-md text-neutral-0">
-              <Icon name="calendar" size={20} className="shrink-0 text-secondary-300" />
-              Starting:&nbsp;<span className="font-medium text-primary-500">Wed 8 March, 2026</span>
-            </span>
-            <span className="flex items-center gap-8 text-md text-neutral-0">
-              <img src="/instructor-abdul.png" alt="" className="size-28 shrink-0 rounded-full object-cover" />
-              Abdul Haseeb
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={onEnroll}
-            className="flex h-48 items-center justify-center rounded-full bg-primary-500 px-20 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
-          >
-            Enroll Now
-          </button>
-        </>
-      )}
-    </div>
-  );
-}
-
-/** "Other schools" list shown beneath the course card. */
+/** "Other schools" list shown beneath the discussion feed's right rail. */
 function OtherSchools() {
   return (
     <div className="flex flex-col gap-16">
@@ -219,12 +140,12 @@ export function DiscussionsScreen({
   onOpenPost,
   enrolled,
   onEnroll,
-  onUnenroll,
 }: {
   onOpenPost?: (post: Post) => void;
   enrolled: boolean;
   onEnroll: () => void;
-  onUnenroll: () => void;
+  /** Accepted for API compatibility; the course side-card that used it was removed. */
+  onUnenroll?: () => void;
 }) {
   const isDesktop = useIsDesktop();
   const [posts, setPosts] = useState<Post[]>(POSTS);
@@ -251,7 +172,7 @@ export function DiscussionsScreen({
 
   const createPost = (text: string, imageUrl?: string) => {
     setPosts((prev) => [
-      { id: `u-${Date.now()}`, author: "Usman", initials: "U", color: "blue", isTeacher: false, time: "Just now", text, likes: 0, comments: [], imageUrl },
+      { id: `u-${Date.now()}`, author: "Hira", initials: "H", color: "blue", isTeacher: false, time: "Just now", text, likes: 0, comments: [], imageUrl },
       ...prev,
     ]);
     setShowCreateSheet(false);
@@ -310,7 +231,6 @@ export function DiscussionsScreen({
           </div>
 
           <div className="flex flex-col gap-32 lg:w-[340px] lg:shrink-0">
-            <CourseSideCard enrolled={enrolled} onEnroll={onEnroll} onContinue={onUnenroll} />
             <OtherSchools />
           </div>
         </div>
@@ -326,7 +246,7 @@ export function DiscussionsScreen({
             enrolled ? "bottom-24" : "bottom-[132px]"
           }`}
         >
-          <Icon name="message-circle-plus" size={24} />
+          <Icon name="plus-circle" size={24} />
         </button>
       )}
 

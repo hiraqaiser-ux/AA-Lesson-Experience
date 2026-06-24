@@ -31,6 +31,11 @@ export default function App() {
       /* ignore */
     }
   };
+  // Log out → drop enrollment and return to the course home (visitor view).
+  const logout = () => {
+    unenroll();
+    setView({ type: "course" });
+  };
 
   return (
     <>
@@ -41,6 +46,7 @@ export default function App() {
               activeId={view.id}
               onNavigate={(id) => setView({ type: "lesson", id })}
               onBack={() => setView({ type: "course" })}
+              onLogout={logout}
             />
           ) : (
             <CourseDetail
@@ -60,6 +66,7 @@ export default function App() {
             onBack={() => setView({ type: "course" })}
             enrolled={enrolled}
             onEnroll={enroll}
+            onLogout={logout}
           />
         )}
       </div>

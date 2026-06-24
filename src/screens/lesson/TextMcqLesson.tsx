@@ -16,10 +16,12 @@ export function TextMcqLesson({
   activeId,
   onNavigate,
   onBack,
+  onLogout,
 }: {
   activeId: string;
   onNavigate: (id: string) => void;
   onBack: () => void;
+  onLogout?: () => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
@@ -41,6 +43,7 @@ export function TextMcqLesson({
       activeId={activeId}
       onNavigate={onNavigate}
       onBack={onBack}
+      onLogout={onLogout}
       hidePrev
       hideNext
       action={

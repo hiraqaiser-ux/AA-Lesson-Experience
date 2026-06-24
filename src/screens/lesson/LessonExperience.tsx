@@ -14,13 +14,15 @@ export function LessonExperience({
   activeId,
   onNavigate,
   onBack,
+  onLogout,
 }: {
   activeId: string;
   onNavigate: (id: string) => void;
   onBack: () => void;
+  onLogout?: () => void;
 }) {
   const lesson = getLesson(activeId);
-  const props = { activeId, onNavigate, onBack };
+  const props = { activeId, onNavigate, onBack, onLogout };
 
   switch (lesson?.screen) {
     case "mcq":

@@ -93,7 +93,7 @@ export function LessonSidebar({
                         {lesson.title}
                       </span>
                       <span className="truncate text-xs text-neutral-600">
-                        {lessonLabel(lesson)} · {lesson.time}
+                        {lessonLabel(lesson)}
                       </span>
                     </span>
                   </button>

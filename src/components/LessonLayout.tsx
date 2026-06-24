@@ -15,12 +15,14 @@ import type { ReactNode } from "react";
 import { NavBar } from "./NavBar";
 import { Icon } from "./Icon";
 import { LessonSidebar } from "./LessonSidebar";
+import { FeedbackButton } from "./FeedbackButton";
 import { getLesson, FLAT_LESSONS, nextLesson, prevLesson } from "../data/lessons";
 
 export function LessonLayout({
   activeId,
   onNavigate,
   onBack,
+  onLogout,
   header,
   children,
   action,
@@ -32,6 +34,8 @@ export function LessonLayout({
   activeId: string;
   onNavigate: (id: string) => void;
   onBack?: () => void;
+  /** Fired by the profile dropdown's "Log out" item. */
+  onLogout?: () => void;
   header?: ReactNode; // custom top bar (overrides the default progress/breadcrumb)
   children: ReactNode;
   /** Optional control in the footer: a Check button, or the assignment composer. */
@@ -97,8 +101,9 @@ export function LessonLayout({
     <div className="flex h-screen flex-col bg-secondary-3">
       {/* On mobile the course-content sidebar lives inside the nav hamburger drawer. */}
       <NavBar
-        userName="Usman"
+        userName="Hira"
         onHome={onBack}
+        onLogout={onLogout}
         mobileMenu={(close) => (
           <LessonSidebar
             activeId={activeId}
@@ -133,12 +138,7 @@ export function LessonLayout({
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <button
-                  type="button"
-                  className="shrink-0 rounded-full border border-secondary-800 px-16 py-8 text-sm font-medium text-neutral-0 hover:bg-overlay-white-8"
-                >
-                  Feedback
-                </button>
+                <FeedbackButton />
               </div>
             ))}
           </div>
