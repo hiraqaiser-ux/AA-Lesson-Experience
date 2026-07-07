@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { Icon } from "../Icon";
 import { ComposerTools } from "./ComposerTools";
+import { MAX_TEXT_LENGTH } from "../../data/discussions";
 
 export function PostComposer({
   onSubmit,
@@ -48,6 +49,7 @@ export function PostComposer({
         onChange={(e) => setValue(e.target.value)}
         autoFocus={autoFocus}
         rows={2}
+        maxLength={MAX_TEXT_LENGTH}
         placeholder={placeholder}
         className="min-h-[44px] w-full resize-none bg-transparent text-lg text-neutral-0 outline-none placeholder:text-neutral-400"
       />
@@ -69,7 +71,11 @@ export function PostComposer({
       <div className="flex items-center justify-between">
         <ComposerTools onAddEmoji={(e) => setValue((v) => v + e)} onPickImage={attach} />
 
-        <button
+        <div className="flex items-center gap-12">
+          <span className="text-sm tabular-nums text-secondary-500">
+            {value.length}/{MAX_TEXT_LENGTH}
+          </span>
+          <button
           type="button"
           onClick={send}
           aria-label="Post"
@@ -83,6 +89,7 @@ export function PostComposer({
         >
           <Icon name="arrow-up" size={20} />
         </button>
+        </div>
       </div>
     </div>
   );

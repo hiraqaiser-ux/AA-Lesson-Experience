@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ResponsiveModal } from "../ResponsiveModal";
 import { ComposerTools } from "./ComposerTools";
 import { Icon } from "../Icon";
+import { MAX_TEXT_LENGTH } from "../../data/discussions";
 
 const PRIMARY_BTN =
   "flex h-44 items-center justify-center rounded-full bg-primary-500 px-24 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400 disabled:cursor-not-allowed disabled:opacity-40";
@@ -40,8 +41,12 @@ export function EditPostDialog({
         onChange={(e) => setText(e.target.value)}
         rows={6}
         autoFocus
+        maxLength={MAX_TEXT_LENGTH}
         className="w-full resize-none rounded-md border border-secondary-800 bg-secondary-950 p-16 text-md leading-[28px] text-neutral-0 outline-none focus:border-secondary-600"
       />
+      <span className="-mt-8 self-end text-sm tabular-nums text-secondary-500">
+        {text.length}/{MAX_TEXT_LENGTH}
+      </span>
 
       {image && (
         <div className="relative w-fit">

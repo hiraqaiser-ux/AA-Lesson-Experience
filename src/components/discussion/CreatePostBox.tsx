@@ -5,6 +5,7 @@
  */
 import { useState } from "react";
 import { Icon } from "../Icon";
+import { MAX_TEXT_LENGTH } from "../../data/discussions";
 
 export function CreatePostBox({
   enrolled,
@@ -45,9 +46,13 @@ export function CreatePostBox({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && send()}
+        maxLength={MAX_TEXT_LENGTH}
         placeholder="Start a discussion"
         className="min-w-0 flex-1 bg-transparent text-lg text-neutral-0 outline-none placeholder:text-neutral-400"
       />
+      <span className="shrink-0 text-sm tabular-nums text-secondary-500">
+        {value.length}/{MAX_TEXT_LENGTH}
+      </span>
       <button
         type="button"
         onClick={send}

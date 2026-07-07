@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Icon } from "../Icon";
 import { EmojiPicker } from "./EmojiPicker";
+import { MAX_TEXT_LENGTH } from "../../data/discussions";
 
 export function CommentComposer({
   enrolled,
@@ -41,9 +42,13 @@ export function CommentComposer({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && onSend()}
+        maxLength={MAX_TEXT_LENGTH}
         placeholder="Write your comment"
         className="min-w-0 flex-1 bg-transparent text-md text-secondary-200 outline-none placeholder:text-secondary-600"
       />
+      <span className="shrink-0 text-sm tabular-nums text-secondary-500">
+        {value.length}/{MAX_TEXT_LENGTH}
+      </span>
       <div className="relative shrink-0">
         <button
           type="button"

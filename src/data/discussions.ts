@@ -1,5 +1,8 @@
 /** Discussion forum data — posts (with their comments) shown in the Discussions tab. */
 
+/** Character limit for every text box (posts, replies, edits, answers). */
+export const MAX_TEXT_LENGTH = 4000;
+
 export type AvatarColor = "teal" | "red" | "orange" | "blue";
 
 /** Author personas — each renders a distinct chip next to the name. */

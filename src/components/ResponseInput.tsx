@@ -21,6 +21,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Icon } from "./Icon";
 import type { IconName } from "./Icon";
+import { MAX_TEXT_LENGTH } from "../data/discussions";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -266,6 +267,7 @@ export function ResponseInput({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
+            maxLength={MAX_TEXT_LENGTH}
             rows={1}
             aria-label={label ?? "Response input"}
             aria-invalid={hasError}
@@ -313,20 +315,25 @@ export function ResponseInput({
         </div>
       </div>
 
-      {/* ── Helper / Error text (DS: same row as below the Input) ── */}
-      {errorText ? (
-        <p
-          id="response-input-error"
-          role="alert"
-          className="text-sm text-error leading-5"
-        >
-          {errorText}
-        </p>
-      ) : helperText ? (
-        <p id="response-input-helper" className="text-sm text-secondary-400 leading-5">
-          {helperText}
-        </p>
-      ) : null}
+      {/* ── Helper / Error text + character counter ── */}
+      <div className="flex items-center justify-between gap-8">
+        <div className="min-w-0">
+          {errorText ? (
+            <p id="response-input-error" role="alert" className="text-sm text-error leading-5">
+              {errorText}
+            </p>
+          ) : helperText ? (
+            <p id="response-input-helper" className="text-sm text-secondary-400 leading-5">
+              {helperText}
+            </p>
+          ) : null}
+        </div>
+        {!isRecording && (
+          <span className="shrink-0 text-sm tabular-nums text-secondary-500">
+            {value.length}/{MAX_TEXT_LENGTH}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
