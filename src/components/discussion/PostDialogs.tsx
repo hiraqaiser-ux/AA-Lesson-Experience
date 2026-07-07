@@ -95,11 +95,11 @@ export function DeletePostDialog({
   return (
     <ResponsiveModal onClose={onClose} title={title}>
       <p className="text-md leading-[26px] text-secondary-300">{body}</p>
-      <div className="flex justify-end gap-12">
-        <button type="button" onClick={onClose} className={GHOST_BTN}>
+      <div className="flex gap-12 lg:justify-end">
+        <button type="button" onClick={onClose} className={`${GHOST_BTN} flex-1 lg:flex-none`}>
           Cancel
         </button>
-        <button type="button" onClick={onConfirm} className={DANGER_BTN}>
+        <button type="button" onClick={onConfirm} className={`${DANGER_BTN} flex-1 lg:flex-none`}>
           Delete
         </button>
       </div>

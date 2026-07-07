@@ -186,7 +186,7 @@ export function CourseDetail({
         ref={tabsRef}
         className="sticky top-[63px] z-30 border-b border-secondary-900 bg-secondary-3 lg:static lg:top-auto lg:z-auto lg:border-b-0 lg:bg-transparent"
       >
-        <div className="mx-auto flex w-full justify-center px-16 py-40 md:px-40 lg:px-[92px]">
+        <div className="mx-auto flex w-full justify-center px-16 py-8 md:px-40 lg:px-[92px]">
           <GlassTabs tabs={TABS} active={tab} onChange={setTab} dot="Discussions" />
         </div>
       </div>

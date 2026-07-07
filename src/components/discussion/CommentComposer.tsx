@@ -1,5 +1,7 @@
-/** CommentComposer — the comment input. Locked ("Enroll to join…") for visitors. */
+/** CommentComposer — the comment input (with emoji). Locked ("Enroll to join…") for visitors. */
+import { useState } from "react";
 import { Icon } from "../Icon";
+import { EmojiPicker } from "./EmojiPicker";
 
 export function CommentComposer({
   enrolled,
@@ -14,6 +16,7 @@ export function CommentComposer({
   onSend: () => void;
   onLockedClick: () => void;
 }) {
+  const [showEmoji, setShowEmoji] = useState(false);
   if (!enrolled) {
     return (
       <button
@@ -41,6 +44,27 @@ export function CommentComposer({
         placeholder="Write your comment"
         className="min-w-0 flex-1 bg-transparent text-md text-secondary-200 outline-none placeholder:text-secondary-600"
       />
+      <div className="relative shrink-0">
+        <button
+          type="button"
+          onClick={() => setShowEmoji((s) => !s)}
+          aria-label="Add emoji"
+          aria-expanded={showEmoji}
+          className="grid size-36 place-items-center rounded-full text-secondary-300 transition-colors hover:bg-overlay-white-8 hover:text-neutral-0"
+        >
+          <Icon name="smile" size={20} />
+        </button>
+        {showEmoji && (
+          <div className="absolute bottom-full right-0 z-50 mb-8">
+            <EmojiPicker
+              onPick={(e) => {
+                onChange(value + e);
+                setShowEmoji(false);
+              }}
+            />
+          </div>
+        )}
+      </div>
       <button
         type="button"
         onClick={onSend}
