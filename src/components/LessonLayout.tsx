@@ -16,7 +16,7 @@ import { NavBar } from "./NavBar";
 import { Icon } from "./Icon";
 import { LessonSidebar } from "./LessonSidebar";
 import { FeedbackButton } from "./FeedbackButton";
-import { getLesson, FLAT_LESSONS, nextLesson, prevLesson } from "../data/lessons";
+import { getLesson, FLAT_STEPS, nextStep, prevStep } from "../data/lessons";
 
 export function LessonLayout({
   activeId,
@@ -55,8 +55,9 @@ export function LessonLayout({
   const lesson = getLesson(activeId);
   const isAssignment = lesson?.type === "assignment";
 
-  // Previous renders mobile-only (removed from the web lesson experience).
-  const prevBtn = (cls = "") => (
+  // Secondary "Back" button — shown before Next on web + mobile; disabled at the
+  // very first step.
+  const backBtn = (cls = "") => (
     <button
       type="button"
       onClick={goPrev}
@@ -64,7 +65,7 @@ export function LessonLayout({
       className={`flex shrink-0 items-center justify-center gap-8 rounded-full border border-secondary-800 px-24 py-12 text-sm font-semibold text-neutral-0 transition-colors hover:bg-overlay-white-8 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent ${cls}`}
     >
       <Icon name="chevron-left" size={16} />
-      Previous
+      Back
     </button>
   );
   const nextBtn = (cls = "") => (
@@ -78,20 +79,21 @@ export function LessonLayout({
     </button>
   );
 
-  // Reading-order navigation (crosses chapters + sections).
-  const prev = prevLesson(activeId);
-  const next = nextLesson(activeId);
-  const goPrev = () => prev && onNavigate(prev.id);
-  const goNext = () => (next ? onNavigate(next.id) : onBack?.());
+  // Step-order navigation: parts within a lesson, then across lessons/sections.
+  const prev = prevStep(activeId);
+  const next = nextStep(activeId);
+  const goPrev = () => prev && onNavigate(prev.stepId);
+  const goNext = () => (next ? onNavigate(next.stepId) : onBack?.());
 
-  // Chapter progress: position of the current lesson within its chapter.
-  const chapterLessons = lesson
-    ? FLAT_LESSONS.filter(
-        (l) => l.sectionIdx === lesson.sectionIdx && l.chapterIdx === lesson.chapterIdx
+  // Chapter progress: position of the current step (part) within its chapter,
+  // counting every part so moving between parts of a lesson advances the bar.
+  const chapterSteps = lesson
+    ? FLAT_STEPS.filter(
+        (s) => s.sectionIdx === lesson.sectionIdx && s.chapterIdx === lesson.chapterIdx
       )
     : [];
-  const pos = lesson ? Math.max(0, chapterLessons.findIndex((l) => l.id === lesson.id)) : 0;
-  const pct = chapterLessons.length ? ((pos + 1) / chapterLessons.length) * 100 : 0;
+  const pos = Math.max(0, chapterSteps.findIndex((s) => s.stepId === activeId));
+  const pct = chapterSteps.length ? ((pos + 1) / chapterSteps.length) * 100 : 0;
 
   const sectionNo = lesson?.sectionTitle?.split(":")[0] ?? "Week 1";
   const sectionName =
@@ -146,20 +148,19 @@ export function LessonLayout({
           {/* Scrolling content */}
           <div className="flex flex-1 flex-col overflow-y-auto py-32">{children}</div>
 
-          {/* Sticky footer — Previous (mobile only) / Next around the action */}
+          {/* Sticky footer — secondary Back before the primary Next / action. */}
           {variant === "assignment" ? (
             <div className="flex shrink-0 flex-col gap-12 pb-24 pt-8 lg:flex-row lg:items-center">
               <div className="lg:order-1 lg:flex-1">{action}</div>
               <div className="flex items-center gap-12 lg:contents">
-                {!hidePrev && prevBtn("flex-1 lg:hidden")}
-                {!hideNext && nextBtn("flex-1 lg:order-2 lg:flex-none")}
+                {!hidePrev && backBtn("flex-1 lg:order-2 lg:flex-none")}
+                {!hideNext && nextBtn("flex-1 lg:order-3 lg:flex-none")}
               </div>
             </div>
           ) : (
-            <div className="flex shrink-0 items-center gap-12 pb-24 pt-8">
-              {!hidePrev && prevBtn("lg:hidden")}
-              <div className="flex min-w-0 flex-1 justify-end">{action}</div>
-              {!hideNext && nextBtn()}
+            <div className="flex shrink-0 items-center gap-12 pb-24 pt-8 lg:justify-end">
+              {!hidePrev && backBtn("flex-1 lg:flex-none")}
+              {hideNext ? action : nextBtn("flex-1 lg:flex-none")}
             </div>
           )}
          </div>

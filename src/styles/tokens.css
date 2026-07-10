@@ -66,6 +66,7 @@
   --c-star: #ffd54f;              /* Primitive/Status/Star */
 
   /* ---- Overlay / glass (alpha baked in) ---- */
+  --c-overlay-white-4: #ffffff0a;  /* softer hairline stroke — NOT in Figma DS; flagged for review */
   --c-overlay-white-8: #ffffff14;
   --c-overlay-white-12: #ffffff1f;
   --c-overlay-white-40: #ffffff66;

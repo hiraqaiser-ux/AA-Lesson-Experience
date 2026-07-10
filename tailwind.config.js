@@ -107,11 +107,15 @@ export default {
         "text-secondary": "var(--c-text-secondary)",
       },
       backgroundColor: {
+        "overlay-white-4": "var(--c-overlay-white-4)",
         "overlay-white-8": "var(--c-overlay-white-8)",
         "overlay-white-12": "var(--c-overlay-white-12)",
         "overlay-success": "var(--c-overlay-success)",
       },
       borderColor: {
+        "overlay-white-4": "var(--c-overlay-white-4)",
+        "overlay-white-8": "var(--c-overlay-white-8)",
+        "overlay-white-12": "var(--c-overlay-white-12)",
         "overlay-white-40": "var(--c-overlay-white-40)",
       },
       fontFamily: {

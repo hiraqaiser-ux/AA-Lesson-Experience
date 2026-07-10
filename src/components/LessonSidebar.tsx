@@ -7,7 +7,7 @@
  */
 import { Icon } from "./Icon";
 import { SECTIONS } from "../data/course";
-import { getLesson, lessonIcon, lessonLabel } from "../data/lessons";
+import { getLesson, lessonIdOf, lessonIcon, lessonLabel } from "../data/lessons";
 
 export function LessonSidebar({
   activeId,
@@ -49,7 +49,7 @@ export function LessonSidebar({
 
               {chapter.lessons.map((lesson, li) => {
                 const id = `${si}-${ci}-${li}`;
-                const isActive = id === activeId;
+                const isActive = id === lessonIdOf(activeId);
                 const completed = lesson.status === "completed";
                 const locked = (lesson.status as string) === "locked";
                 return (

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../components/NavBar";
+import { Button } from "../components/Button";
 import { Footer } from "../components/Footer";
 import { GlassTabs } from "../components/GlassTabs";
 import { FaqItem } from "../components/FaqItem";
@@ -7,6 +8,7 @@ import { Icon } from "../components/Icon";
 import { SchoolInfoCard } from "../components/SchoolInfoCard";
 import { LessonsScreen } from "./LessonsScreen";
 import { DiscussionsScreen } from "./DiscussionsScreen";
+import { communityNavLinks, goToScreen } from "../components/newsfeed/communityNav";
 import { COURSE, FAQS } from "../data/course";
 
 const TABS = ["About", "Lessons", "Discussions"];
@@ -74,12 +76,19 @@ export function CourseDetail({
   enrolled,
   onEnroll,
   onUnenroll,
+  communityMode = false,
 }: {
   onOpenLesson?: (lessonId: string) => void;
   onOpenPost?: (post: import("../data/discussions").Post) => void;
   enrolled: boolean;
   onEnroll: () => void;
   onUnenroll: () => void;
+  /**
+   * Reached from the newsfeed (a course/school link) rather than the app's own
+   * entry point: swaps in the community nav bar (Home/Courses/Blogs) and adds a
+   * "Back to home" ghost button. Leaves the default entry's nav untouched.
+   */
+  communityMode?: boolean;
 }) {
   const [tab, setTab] = useState("About");
   const [floating, setFloating] = useState(false);
@@ -133,14 +142,33 @@ export function CourseDetail({
         visitor={!enrolled}
         onEnroll={onEnroll}
         onLogout={onUnenroll}
-        onHome={() => {
-          setTab("About");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
+        onHome={
+          communityMode
+            ? () => goToScreen("newsfeed")
+            : () => {
+                setTab("About");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+        }
+        links={communityMode ? communityNavLinks("courses") : undefined}
+        elevateOnScroll={communityMode}
+        visitorCta={communityMode ? "login-only" : "login-enroll"}
       />
 
       {/* Hero */}
       <div className="mx-auto flex w-full flex-col gap-24 px-16 pt-24 md:gap-32 md:px-40 md:pt-32 lg:px-[92px]">
+        {communityMode && (
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => goToScreen("newsfeed")}
+            className="self-start !pt-0"
+          >
+            <Icon name="chevron-left" size={16} />
+            Back to home
+          </Button>
+        )}
+
         <div className="flex flex-col gap-24 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-16 md:max-w-[520px]">
             <span className="flex items-center gap-8">

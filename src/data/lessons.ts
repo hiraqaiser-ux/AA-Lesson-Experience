@@ -19,6 +19,16 @@ const SCREEN_OVERRIDE: Record<string, LessonScreen> = {
   "0-1-1": "listen-repeat", // Listen and repeat → Listen & Repeat (listen → record)
 };
 
+/**
+ * Multi-part lessons (by lesson id). A lesson can bundle several exercises the
+ * learner steps through with Back / Next — e.g. an "Alif" exercise made of a
+ * text MCQ then an audio MCQ. Parts are invisible to the user (no part
+ * indicator); Next past the last part continues into the next lesson.
+ */
+const PARTS_OVERRIDE: Record<string, LessonScreen[]> = {
+  "0-0-1": ["mcq", "practice"], // Practice with Alif → Text MCQ, then Audio MCQ
+};
+
 const TYPE_ICON: Record<LessonType, IconName> = {
   video: "video",
   practice: "list-checks",
@@ -69,18 +79,50 @@ export const FLAT_LESSONS: FlatLesson[] = SECTIONS.flatMap((section, si) =>
   )
 );
 
+/** Strip the part suffix from a step id → the base lesson id (`0-0-1.1` → `0-0-1`). */
+export function lessonIdOf(stepId: string): string {
+  return stepId.split(".")[0];
+}
+
 export function getLesson(id: string): FlatLesson | undefined {
-  return FLAT_LESSONS.find((l) => l.id === id);
+  return FLAT_LESSONS.find((l) => l.id === lessonIdOf(id));
 }
 
-/** The next lesson in reading order (for the "Next" button), or undefined. */
-export function nextLesson(id: string): FlatLesson | undefined {
-  const i = FLAT_LESSONS.findIndex((l) => l.id === id);
-  return i >= 0 ? FLAT_LESSONS[i + 1] : undefined;
+/**
+ * A single navigable step = a (lesson, part). Single-part lessons produce one
+ * step whose id is the lesson id; extra parts get a `.1`, `.2` … suffix.
+ */
+export interface FlatStep extends FlatLesson {
+  stepId: string;
+  lessonId: string;
+  partIndex: number;
+  partCount: number;
 }
 
-/** The previous lesson in reading order (for the "Previous" button), or undefined. */
-export function prevLesson(id: string): FlatLesson | undefined {
-  const i = FLAT_LESSONS.findIndex((l) => l.id === id);
-  return i > 0 ? FLAT_LESSONS[i - 1] : undefined;
+export const FLAT_STEPS: FlatStep[] = FLAT_LESSONS.flatMap((lesson) => {
+  const screens = PARTS_OVERRIDE[lesson.id] ?? [lesson.screen];
+  return screens.map((screen, partIndex) => ({
+    ...lesson,
+    screen,
+    stepId: partIndex === 0 ? lesson.id : `${lesson.id}.${partIndex}`,
+    lessonId: lesson.id,
+    partIndex,
+    partCount: screens.length,
+  }));
+});
+
+export function getStep(id: string): FlatStep | undefined {
+  return FLAT_STEPS.find((s) => s.stepId === id);
+}
+
+/** The next step (crosses parts, then lessons, then sections), or undefined at the end. */
+export function nextStep(id: string): FlatStep | undefined {
+  const i = FLAT_STEPS.findIndex((s) => s.stepId === id);
+  return i >= 0 ? FLAT_STEPS[i + 1] : undefined;
+}
+
+/** The previous step, or undefined at the very first step. */
+export function prevStep(id: string): FlatStep | undefined {
+  const i = FLAT_STEPS.findIndex((s) => s.stepId === id);
+  return i > 0 ? FLAT_STEPS[i - 1] : undefined;
 }

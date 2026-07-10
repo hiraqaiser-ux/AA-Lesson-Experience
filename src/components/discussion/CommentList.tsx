@@ -5,7 +5,7 @@
  */
 import { useState } from "react";
 import { Icon } from "../Icon";
-import { Avatar, RolePill } from "./DiscussionParts";
+import { Avatar, RolePill, MentionText } from "./DiscussionParts";
 import { ActionMenu, type ActionItem } from "../ActionMenu";
 import { EditPostDialog, DeletePostDialog } from "./PostDialogs";
 import type { Comment } from "../../data/discussions";
@@ -18,6 +18,7 @@ export function CommentList({
   onRequireEnroll,
   onEditComment,
   onDeleteComment,
+  highlightMentions = false,
 }: {
   comments: Comment[];
   enrolled: boolean;
@@ -26,6 +27,8 @@ export function CommentList({
   onEditComment?: (id: string, text: string) => void;
   /** Delete a comment. */
   onDeleteComment?: (id: string) => void;
+  /** Highlight `@handle` mentions in the brand colour. */
+  highlightMentions?: boolean;
 }) {
   const [liked, setLiked] = useState<Set<string>>(new Set());
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -58,7 +61,9 @@ export function CommentList({
                 {c.role && <RolePill role={c.role} />}
               </span>
               <span className="text-sm text-neutral-400">{c.time}</span>
-              <p className="text-md leading-[30px] text-neutral-0">{c.text}</p>
+              <p className="text-md leading-[30px] text-neutral-0">
+                <MentionText text={c.text} on={highlightMentions} />
+              </p>
               <button
                 type="button"
                 onClick={() => toggle(c.id)}

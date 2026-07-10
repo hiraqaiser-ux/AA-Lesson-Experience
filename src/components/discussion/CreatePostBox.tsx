@@ -11,10 +11,13 @@ export function CreatePostBox({
   enrolled,
   onCreate,
   onRequireEnroll,
+  lockedLabel = "🔒 Enroll to join the conversation",
 }: {
   enrolled: boolean;
   onCreate: (text: string) => void;
   onRequireEnroll: () => void;
+  /** Text shown in the locked (not-signed-in) state. */
+  lockedLabel?: string;
 }) {
   const [value, setValue] = useState("");
 
@@ -25,7 +28,7 @@ export function CreatePostBox({
         onClick={onRequireEnroll}
         className="flex w-full items-center justify-between gap-12 rounded-md border-2 border-secondary-900 p-12 text-left"
       >
-        <span className="text-lg text-neutral-400">🔒 Enroll to join the conversation</span>
+        <span className="text-lg text-neutral-400">{lockedLabel}</span>
         <span className="grid size-40 shrink-0 place-items-center rounded-full bg-secondary-800 text-secondary-500">
           <Icon name="arrow-right" size={20} />
         </span>

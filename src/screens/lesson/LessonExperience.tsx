@@ -1,9 +1,10 @@
 /**
- * LessonExperience — routes to the correct lesson screen based on the lesson's
- * screen kind (video / mcq / practice). Shared by the Lessons list and the
- * in-lesson sidebar navigation.
+ * LessonExperience — routes to the correct lesson screen based on the current
+ * step's screen kind (video / mcq / practice / …). A lesson may have several
+ * parts (steps); the active step decides which screen renders. Shared by the
+ * Lessons list and the in-lesson sidebar navigation.
  */
-import { getLesson } from "../../data/lessons";
+import { getStep } from "../../data/lessons";
 import { VideoLesson } from "./VideoLesson";
 import { TextMcqLesson } from "./TextMcqLesson";
 import { PracticeLesson } from "./PracticeLesson";
@@ -21,10 +22,10 @@ export function LessonExperience({
   onBack: () => void;
   onLogout?: () => void;
 }) {
-  const lesson = getLesson(activeId);
+  const step = getStep(activeId);
   const props = { activeId, onNavigate, onBack, onLogout };
 
-  switch (lesson?.screen) {
+  switch (step?.screen) {
     case "mcq":
       return <TextMcqLesson {...props} />;
     case "practice":

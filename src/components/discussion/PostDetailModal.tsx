@@ -7,18 +7,21 @@ import { useEffect } from "react";
 import { Icon } from "../Icon";
 import { AuthorHeader } from "./DiscussionParts";
 import { PostDetailContent } from "./PostDetailContent";
-import type { Post } from "../../data/discussions";
+import type { Mentionable, Post } from "../../data/discussions";
 
 export function PostDetailModal({
   post,
   onClose,
   enrolled,
   onRequireEnroll,
+  mentionables,
 }: {
   post: Post;
   onClose: () => void;
   enrolled: boolean;
   onRequireEnroll: () => void;
+  /** People who can be @mentioned in comments. */
+  mentionables?: Mentionable[];
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -45,6 +48,7 @@ export function PostDetailModal({
             color={post.color}
             isTeacher={post.isTeacher}
             time={post.time}
+            school={post.school}
           />
           <button
             type="button"
@@ -56,7 +60,12 @@ export function PostDetailModal({
           </button>
         </div>
 
-        <PostDetailContent post={post} enrolled={enrolled} onRequireEnroll={onRequireEnroll} />
+        <PostDetailContent
+          post={post}
+          enrolled={enrolled}
+          onRequireEnroll={onRequireEnroll}
+          mentionables={mentionables}
+        />
       </div>
     </div>
   );

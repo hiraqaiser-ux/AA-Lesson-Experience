@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Icon } from "../../components/Icon";
 import { LessonLayout } from "../../components/LessonLayout";
 import { SpokenArabic } from "../../components/SpokenArabic";
-import { nextLesson } from "../../data/lessons";
+import { nextStep } from "../../data/lessons";
 
 const OPTIONS = ["Noon", "Baa", "Alif", "Daal"];
 const CORRECT = 2; // Alif
@@ -26,8 +26,8 @@ export function TextMcqLesson({
   const [selected, setSelected] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
 
-  const next = nextLesson(activeId);
-  const goNext = () => (next ? onNavigate(next.id) : onBack());
+  const next = nextStep(activeId);
+  const goNext = () => (next ? onNavigate(next.stepId) : onBack());
 
   function optionClass(i: number): string {
     if (checked) {
@@ -44,7 +44,6 @@ export function TextMcqLesson({
       onNavigate={onNavigate}
       onBack={onBack}
       onLogout={onLogout}
-      hidePrev
       hideNext
       action={
         <button
@@ -52,7 +51,7 @@ export function TextMcqLesson({
           onClick={() => (checked ? goNext() : selected !== null && setChecked(true))}
           disabled={selected === null}
           className={[
-            "flex items-center gap-8 rounded-full px-24 py-12 text-sm font-semibold transition-all duration-micro ease-in-out-soft",
+            "flex flex-1 items-center justify-center gap-8 rounded-full px-24 py-12 text-sm font-semibold transition-all duration-micro ease-in-out-soft lg:flex-none",
             selected === null
               ? "cursor-not-allowed bg-secondary-800 text-secondary-600"
               : "bg-primary-500 text-secondary-1000 hover:bg-primary-400 active:scale-95",

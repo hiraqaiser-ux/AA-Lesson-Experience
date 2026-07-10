@@ -8,19 +8,22 @@ import type { ReactNode } from "react";
 import { ReactionPill } from "./DiscussionParts";
 import { CommentList } from "./CommentList";
 import { CommentComposer } from "./CommentComposer";
-import type { Comment, Post } from "../../data/discussions";
+import type { Comment, Mentionable, Post } from "../../data/discussions";
 
 export function PostDetailContent({
   post,
   enrolled,
   onRequireEnroll,
   header,
+  mentionables,
 }: {
   post: Post;
   enrolled: boolean;
   onRequireEnroll: () => void;
   /** Optional content rendered at the top of the post column (e.g. author header). */
   header?: ReactNode;
+  /** People who can be @mentioned in comments. Enables mention autocomplete + highlighting. */
+  mentionables?: Mentionable[];
 }) {
   const [comments, setComments] = useState<Comment[]>(post.comments);
   const [value, setValue] = useState("");
@@ -50,6 +53,13 @@ export function PostDetailContent({
       <div className="flex flex-col gap-16 px-24 py-24 lg:flex-1 lg:overflow-y-auto lg:px-32">
         {header}
         <p className="whitespace-pre-wrap text-md leading-[30px] text-neutral-0">{post.text}</p>
+        {post.imageUrl && (
+          <img
+            src={post.imageUrl}
+            alt=""
+            className="max-h-[360px] w-fit rounded-md object-cover"
+          />
+        )}
         <div className="flex items-center gap-8 px-4">
           <button type="button" onClick={likePost} aria-label="Like" aria-pressed={liked}>
             <ReactionPill icon="heart" count={post.likes + (liked ? 1 : 0)} iconSize={20} active={liked} />
@@ -70,15 +80,17 @@ export function PostDetailContent({
             onRequireEnroll={onRequireEnroll}
             onEditComment={editComment}
             onDeleteComment={deleteComment}
+            highlightMentions={!!mentionables}
           />
         </div>
-        <div className="shrink-0">
+        <div className="sticky bottom-0 z-10 -mx-24 border-t border-secondary-950 bg-secondary-1000 px-24 py-12 lg:static lg:z-auto lg:mx-0 lg:border-t-0 lg:bg-transparent lg:px-0 lg:py-0">
           <CommentComposer
             enrolled={enrolled}
             value={value}
             onChange={setValue}
             onSend={send}
             onLockedClick={onRequireEnroll}
+            mentionables={mentionables}
           />
         </div>
       </div>

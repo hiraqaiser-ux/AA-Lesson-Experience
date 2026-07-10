@@ -8,6 +8,18 @@ export type AvatarColor = "teal" | "red" | "orange" | "blue";
 /** Author personas — each renders a distinct chip next to the name. */
 export type Role = "teacher" | "assistant" | "admin";
 
+/**
+ * A person who can be @mentioned in a comment (e.g. a student). `handle` is the
+ * single-token identifier inserted into the text as `@handle`.
+ */
+export interface Mentionable {
+  id: string;
+  name: string;
+  handle: string;
+  initials: string;
+  color: AvatarColor;
+}
+
 export interface Comment {
   id: string;
   name: string;
@@ -35,6 +47,10 @@ export interface Post {
   imageUrl?: string;
   /** Pinned posts show a green pin icon by the kebab menu. */
   pinned?: boolean;
+  /** School the post belongs to — rendered (underlined) in the byline with a "Join Now" link. */
+  school?: string;
+  /** Optional author photo; falls back to the initials avatar when omitted. */
+  avatarUrl?: string;
 }
 
 export const POSTS: Post[] = [

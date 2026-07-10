@@ -16,6 +16,17 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
 
+/** A primary navigation link (e.g. Home / Courses / Blogs). */
+export interface NavLink {
+  label: string;
+  /** Click handler (for in-app navigation). Takes precedence over `href`. */
+  onClick?: () => void;
+  /** Fallback link target when there's no handler. */
+  href?: string;
+  /** Highlights the current section. */
+  active?: boolean;
+}
+
 export function NavBar({
   userName = "Hira",
   mobileMenu,
@@ -23,6 +34,10 @@ export function NavBar({
   visitor = false,
   onEnroll,
   onLogout,
+  links,
+  elevateOnScroll = false,
+  visitorCta = "login-enroll",
+  mobileFooter,
 }: {
   userName?: string;
   /** Custom drawer content for the hamburger menu. Falls back to Blog + Log out. */
@@ -35,11 +50,45 @@ export function NavBar({
   onEnroll?: () => void;
   /** Fired by the "Log out" item in the profile dropdown. */
   onLogout?: () => void;
+  /**
+   * Primary nav links (Home / Courses / Blogs). When provided they replace the
+   * default single "Blog" link (desktop row + mobile drawer). Omitting them
+   * leaves the original nav unchanged.
+   */
+  links?: NavLink[];
+  /** Adds a drop shadow to the (sticky) nav once the page is scrolled. */
+  elevateOnScroll?: boolean;
+  /**
+   * Visitor call-to-action set:
+   * - "login-enroll" (default): secondary Login + primary Enroll Now.
+   * - "login-only": a single primary Login button.
+   */
+  visitorCta?: "login-enroll" | "login-only";
+  /** Extra content rendered at the bottom of the mobile drawer (e.g. a callout card). */
+  mobileFooter?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Drop shadow once the page scrolls (opt-in via `elevateOnScroll`).
+  useEffect(() => {
+    if (!elevateOnScroll) return;
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [elevateOnScroll]);
+
+  /** Anchor click → run the handler (and prevent navigation) when present. */
+  const onLinkClick = (link: NavLink) => (e: React.MouseEvent) => {
+    if (link.onClick) {
+      e.preventDefault();
+      link.onClick();
+    }
+  };
 
   // Close the profile dropdown on outside click.
   useEffect(() => {
@@ -52,8 +101,12 @@ export function NavBar({
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-secondary-1000">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-16 py-16 lg:px-64 lg:py-20">
+    <header
+      className={`sticky top-0 z-40 w-full bg-secondary-1000 transition-shadow duration-micro ${
+        elevateOnScroll && scrolled ? "shadow-lg" : ""
+      }`}
+    >
+      <div className="relative mx-auto flex max-w-[1440px] items-center justify-between px-16 py-16 lg:px-64 lg:py-20">
         {/* Left: hamburger (mobile only) + logo */}
         <div className="flex items-center gap-12">
           <button
@@ -78,31 +131,68 @@ export function NavBar({
           </a>
         </div>
 
+        {/* Primary nav links — centered (desktop) */}
+        {links && (
+          <nav
+            className="absolute inset-y-0 left-1/2 hidden -translate-x-1/2 items-center gap-4 lg:flex"
+            aria-label="Primary"
+          >
+            {links.map((l) => (
+              <a
+                key={l.label}
+                href={l.href ?? "#"}
+                onClick={onLinkClick(l)}
+                aria-current={l.active ? "page" : undefined}
+                className={[
+                  "rounded-sm px-12 py-8 text-md transition-colors",
+                  l.active
+                    ? "font-semibold text-neutral-0"
+                    : "text-secondary-200 hover:text-neutral-0",
+                ].join(" ")}
+              >
+                {l.label}
+              </a>
+            ))}
+          </nav>
+        )}
+
         {/* Right: Blog (desktop) + profile pill / visitor CTAs */}
         <nav className="flex items-center gap-12 lg:gap-16">
-          <a
-            href="#"
-            className="hidden rounded-sm px-12 py-8 text-md text-neutral-0 transition-colors hover:text-secondary-200 lg:block"
-          >
-            Blog
-          </a>
+          {!links && (
+            <a
+              href="#"
+              className="hidden rounded-sm px-12 py-8 text-md text-neutral-0 transition-colors hover:text-secondary-200 lg:block"
+            >
+              Blog
+            </a>
+          )}
 
           {visitor ? (
-            <>
-              <button
-                type="button"
-                className="hidden rounded-full bg-secondary-800 px-20 py-8 text-sm font-medium text-neutral-0 transition-colors hover:bg-secondary-700 lg:block"
-              >
-                Login
-              </button>
+            visitorCta === "login-only" ? (
               <button
                 type="button"
                 onClick={onEnroll}
                 className="rounded-full bg-primary-500 px-20 py-8 text-sm font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
               >
-                Enroll Now
+                Sign in
               </button>
-            </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="hidden rounded-full bg-secondary-800 px-20 py-8 text-sm font-medium text-neutral-0 transition-colors hover:bg-secondary-700 lg:block"
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={onEnroll}
+                  className="rounded-full bg-primary-500 px-20 py-8 text-sm font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+                >
+                  Enroll Now
+                </button>
+              </>
+            )
           ) : (
             <div ref={menuRef} className="relative">
               <button
@@ -180,40 +270,95 @@ export function NavBar({
               mobileMenu(close)
             ) : visitor ? (
               <nav className="flex flex-col gap-8 px-12 py-8">
-                <a
-                  href="#"
-                  onClick={close}
-                  className="rounded-sm px-12 py-12 text-md text-neutral-0 transition-colors hover:bg-overlay-white-8"
-                >
-                  Blog
-                </a>
-                <button
-                  type="button"
-                  onClick={close}
-                  className="rounded-full bg-secondary-800 px-20 py-12 text-md font-medium text-neutral-0 transition-colors hover:bg-secondary-700"
-                >
-                  Login
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onEnroll?.();
-                    close();
-                  }}
-                  className="rounded-full bg-primary-500 px-20 py-12 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
-                >
-                  Enroll Now
-                </button>
+                {links ? (
+                  links.map((l) => (
+                    <a
+                      key={l.label}
+                      href={l.href ?? "#"}
+                      onClick={(e) => {
+                        onLinkClick(l)(e);
+                        close();
+                      }}
+                      aria-current={l.active ? "page" : undefined}
+                      className={[
+                        "rounded-sm px-12 py-12 text-md transition-colors hover:bg-overlay-white-8",
+                        l.active ? "font-semibold text-neutral-0" : "text-neutral-0",
+                      ].join(" ")}
+                    >
+                      {l.label}
+                    </a>
+                  ))
+                ) : (
+                  <a
+                    href="#"
+                    onClick={close}
+                    className="rounded-sm px-12 py-12 text-md text-neutral-0 transition-colors hover:bg-overlay-white-8"
+                  >
+                    Blog
+                  </a>
+                )}
+                {visitorCta === "login-only" ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onEnroll?.();
+                      close();
+                    }}
+                    className="rounded-full bg-primary-500 px-20 py-12 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+                  >
+                    Sign in
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={close}
+                      className="rounded-full bg-secondary-800 px-20 py-12 text-md font-medium text-neutral-0 transition-colors hover:bg-secondary-700"
+                    >
+                      Login
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onEnroll?.();
+                        close();
+                      }}
+                      className="rounded-full bg-primary-500 px-20 py-12 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+                    >
+                      Enroll Now
+                    </button>
+                  </>
+                )}
               </nav>
             ) : (
               <nav className="flex flex-col gap-4 px-12 py-8">
-                <a
-                  href="#"
-                  onClick={close}
-                  className="rounded-sm px-12 py-12 text-md text-neutral-0 transition-colors hover:bg-overlay-white-8"
-                >
-                  Blog
-                </a>
+                {links ? (
+                  links.map((l) => (
+                    <a
+                      key={l.label}
+                      href={l.href ?? "#"}
+                      onClick={(e) => {
+                        onLinkClick(l)(e);
+                        close();
+                      }}
+                      aria-current={l.active ? "page" : undefined}
+                      className={[
+                        "rounded-sm px-12 py-12 text-md transition-colors hover:bg-overlay-white-8",
+                        l.active ? "font-semibold text-neutral-0" : "text-neutral-0",
+                      ].join(" ")}
+                    >
+                      {l.label}
+                    </a>
+                  ))
+                ) : (
+                  <a
+                    href="#"
+                    onClick={close}
+                    className="rounded-sm px-12 py-12 text-md text-neutral-0 transition-colors hover:bg-overlay-white-8"
+                  >
+                    Blog
+                  </a>
+                )}
                 <button
                   type="button"
                   onClick={close}
@@ -223,6 +368,8 @@ export function NavBar({
                 </button>
               </nav>
             )}
+
+            {mobileFooter && <div className="px-12 py-8">{mobileFooter}</div>}
           </div>
         </div>
       )}
