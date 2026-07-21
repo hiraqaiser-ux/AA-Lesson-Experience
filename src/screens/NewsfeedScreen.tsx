@@ -1,19 +1,23 @@
 /**
  * NewsfeedScreen — the community newsfeed landing (a standalone concept; no
  * relation to the course/lesson experience). Two columns on desktop: the post
- * feed + a schools rail. On mobile a bottom tab bar switches between "Feed" and
- * "Schools". Signed-out visitors see everything but are prompted to sign in the
- * moment they try to like, comment, post, or join.
+ * feed + a schools rail. On mobile the feed fills the screen. Signed-out
+ * visitors see everything but are prompted to sign in the moment they try to
+ * like, comment, post, or join. Signed-in visitors are one of three personas
+ * (Enrolled Student / Teacher / Teacher Assistant), switchable from the
+ * account dropdown — the active persona drives the nav identity and the
+ * author shown on anything they create.
  *
- * Reuses: NavBar, PostComposer, CreatePostBox, PostDetailModal, BottomSheet and
- * the discussion primitives. New/newsfeed-only pieces: FeedPostCard,
- * SchoolsSidebar, SignInPrompt.
+ * Reuses: NavBar, PostComposer, CreatePostBox, BottomSheet and the discussion
+ * primitives. New/newsfeed-only pieces: FeedPostCard, SchoolsSidebar,
+ * SignInPrompt, NewsfeedPostPage.
  */
 import { useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { Icon } from "../components/Icon";
 import { PostComposer } from "../components/discussion/PostComposer";
 import { CreatePostBox } from "../components/discussion/CreatePostBox";
+import { AVATAR_BG } from "../components/discussion/DiscussionParts";
 import { NewsfeedPostPage } from "../components/newsfeed/NewsfeedPostPage";
 import { ReportPostDialog } from "../components/discussion/PostDialogs";
 import { BottomSheet } from "../components/BottomSheet";
@@ -23,12 +27,14 @@ import { BecomeTeacherCard } from "../components/newsfeed/BecomeTeacherCard";
 import { SignInPrompt } from "../components/newsfeed/SignInPrompt";
 import { communityNavLinks, goToScreen } from "../components/newsfeed/communityNav";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+import { usePersona } from "../hooks/usePersona";
+import { PERSONAS, buildAccountSwitcher, type PersonaId } from "../data/personas";
 import { FEED_POSTS } from "../data/newsfeed";
 import type { Post } from "../data/discussions";
 
 export function NewsfeedScreen() {
   const isDesktop = useIsDesktop();
-  const [signedIn, setSignedIn] = useState(false);
+  const [persona, setPersona] = usePersona();
   const [posts, setPosts] = useState<Post[]>(FEED_POSTS);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [openPost, setOpenPost] = useState<Post | null>(null);
@@ -36,18 +42,24 @@ export function NewsfeedScreen() {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showCreateSheet, setShowCreateSheet] = useState(false);
 
+  const signedIn = persona !== "visitor";
+  const current = persona !== "visitor" ? PERSONAS[persona] : undefined;
+
+  /** Switching to Visitor also clears ephemeral engagement state (matches "sign out"). */
+  const switchPersona = (id: PersonaId) => {
+    setPersona(id);
+    if (id === "visitor") setLikedPosts(new Set());
+  };
+
   const requireSignIn = () => {
     if (!signedIn) setShowSignIn(true);
     return signedIn;
   };
   const signIn = () => {
-    setSignedIn(true);
+    switchPersona("student");
     setShowSignIn(false);
   };
-  const signOut = () => {
-    setSignedIn(false);
-    setLikedPosts(new Set());
-  };
+  const signOut = () => switchPersona("visitor");
 
   // Home = this newsfeed (the only mobile view now). Courses navigates to the Explore Courses page.
   const goHome = () => {
@@ -77,10 +89,11 @@ export function NewsfeedScreen() {
     setPosts((prev) => [
       {
         id: `u-${prev.length}-${text.length}`,
-        author: "Hira",
-        initials: "H",
-        color: "blue",
+        author: current?.name ?? "Hira",
+        initials: current?.initials ?? "H",
+        color: current?.color ?? "blue",
         isTeacher: false,
+        role: current?.role,
         time: "Just now",
         text,
         likes: 0,
@@ -151,7 +164,10 @@ export function NewsfeedScreen() {
         onEnroll={signIn}
         onLogout={signOut}
         onHome={goHome}
-        userName="Hira"
+        userName={current?.name ?? "Hira"}
+        avatarUrl={current?.avatarUrl}
+        avatarColorClassName={current ? AVATAR_BG[current.color] : undefined}
+        accountSwitcher={signedIn ? buildAccountSwitcher(persona, switchPersona) : undefined}
         links={navLinks}
         elevateOnScroll
         visitorCta="login-only"
@@ -220,9 +236,8 @@ export function NewsfeedScreen() {
         <NewsfeedPostPage
           post={openPost}
           onBack={() => setOpenPost(null)}
-          signedIn={signedIn}
-          onSignIn={signIn}
-          onSignOut={signOut}
+          persona={persona}
+          onSwitchPersona={switchPersona}
         />
       )}
 

@@ -26,6 +26,8 @@ export interface School {
   featured?: boolean;
   /** External destination opened when the course is clicked (athanacademy.com). */
   url?: string;
+  /** Present when the signed-in student is enrolled and partway through — drives "My Courses". */
+  progress?: { completed: number; total: number };
 }
 
 /** Where a course card opens (athanacademy.com). Per-course links can be set via `School.url`. */
@@ -44,6 +46,7 @@ export const SCHOOLS: School[] = [
     description:
       "Start from the basics and build your skills to recite Quran on your own, using the video lessons and 1 on 1 chats.",
     featured: true,
+    progress: { completed: 3, total: 12 },
   },
   {
     id: "arabic-calligraphy",
@@ -68,6 +71,7 @@ export const SCHOOLS: School[] = [
     duration: "8 weeks",
     description:
       "Understand the grammar behind Quranic Arabic — nouns, verbs, and sentence structure — so you can follow the meaning of what you recite.",
+    progress: { completed: 5, total: 8 },
   },
   {
     id: "homeschooling",
@@ -113,6 +117,7 @@ export const SCHOOLS: School[] = [
     duration: "4 weeks",
     description:
       "Ground your belief in the essentials of Islamic creed, explained clearly for beginners with real-world questions answered.",
+    progress: { completed: 2, total: 4 },
   },
   {
     id: "reminders",
@@ -126,6 +131,22 @@ export const SCHOOLS: School[] = [
       "Short, weekly reminders to keep your heart connected — bite-sized lessons you can act on the same day.",
   },
 ];
+
+/**
+ * The enrolled course to feature as "Continue Learning" — the one with the
+ * lowest completion percentage (most work left to pick back up). Used to
+ * keep the mobile Home feed's floating card and its "Enrolled Courses" row
+ * in sync without either one owning the other's state.
+ */
+export function getCurrentEnrolledSchool(schools: School[]): School | undefined {
+  const enrolled = schools.filter((s) => s.progress);
+  if (enrolled.length === 0) return undefined;
+  return enrolled.reduce((lowest, s) =>
+    s.progress!.completed / s.progress!.total < lowest.progress!.completed / lowest.progress!.total
+      ? s
+      : lowest
+  );
+}
 
 /** Students who can be @mentioned by a teacher in the comments. */
 export const STUDENTS: Mentionable[] = [

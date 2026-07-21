@@ -22,12 +22,14 @@ export function EditPostDialog({
   onSave,
   onClose,
   title = "Edit post",
+  forceMobile = false,
 }: {
   initialText: string;
   initialImageUrl?: string;
   onSave: (text: string, imageUrl?: string) => void;
   onClose: () => void;
   title?: string;
+  forceMobile?: boolean;
 }) {
   const [text, setText] = useState(initialText);
   const [image, setImage] = useState<{ url: string } | null>(
@@ -35,7 +37,7 @@ export function EditPostDialog({
   );
 
   return (
-    <ResponsiveModal onClose={onClose} title={title}>
+    <ResponsiveModal onClose={onClose} title={title} forceMobile={forceMobile}>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -118,13 +120,15 @@ const REASONS = ["Spam or misleading", "Harassment or hate", "Inappropriate cont
 export function ReportPostDialog({
   onSubmit,
   onClose,
+  forceMobile = false,
 }: {
   onSubmit: (reason: string) => void;
   onClose: () => void;
+  forceMobile?: boolean;
 }) {
   const [reason, setReason] = useState<string | null>(null);
   return (
-    <ResponsiveModal onClose={onClose} title="Report post">
+    <ResponsiveModal onClose={onClose} title="Report post" forceMobile={forceMobile}>
       <p className="text-md text-secondary-300">Why are you reporting this post?</p>
       <div className="flex flex-col gap-8">
         {REASONS.map((r) => (

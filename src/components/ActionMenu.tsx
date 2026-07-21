@@ -18,11 +18,14 @@ export interface ActionItem {
 export function ActionMenu({
   items,
   label = "More actions",
+  forceMobile = false,
 }: {
   items: ActionItem[];
   label?: string;
+  /** Always render the BottomSheet variant, ignoring actual window width — see ResponsiveModal. */
+  forceMobile?: boolean;
 }) {
-  const isDesktop = useIsDesktop();
+  const isDesktop = useIsDesktop() && !forceMobile;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 

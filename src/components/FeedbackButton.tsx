@@ -4,25 +4,35 @@
  * Renders as a centered dialog on desktop and a bottom sheet on mobile
  * (via ResponsiveModal). Used in the lesson header and assignment header.
  */
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ResponsiveModal } from "./ResponsiveModal";
 
 const PILL =
   "shrink-0 rounded-full border border-secondary-800 px-16 py-8 text-sm font-medium text-neutral-0 transition-colors hover:bg-overlay-white-8";
 
-export function FeedbackButton({ className = PILL }: { className?: string }) {
+export function FeedbackButton({
+  className = PILL,
+  children,
+  forceMobile = false,
+}: {
+  className?: string;
+  /** Overrides the default "Feedback" text — e.g. an icon + label row (see MobileSettingsScreen). */
+  children?: ReactNode;
+  /** Always render the BottomSheet variant — see ResponsiveModal. */
+  forceMobile?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={className}>
-        Feedback
+        {children ?? "Feedback"}
       </button>
-      {open && <FeedbackModal onClose={() => setOpen(false)} />}
+      {open && <FeedbackModal onClose={() => setOpen(false)} forceMobile={forceMobile} />}
     </>
   );
 }
 
-function FeedbackModal({ onClose }: { onClose: () => void }) {
+function FeedbackModal({ onClose, forceMobile }: { onClose: () => void; forceMobile: boolean }) {
   const [value, setValue] = useState("");
   const canSend = !!value.trim();
 
@@ -33,7 +43,7 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <ResponsiveModal onClose={onClose} title="Share Your Feedback">
+    <ResponsiveModal onClose={onClose} title="Share Your Feedback" forceMobile={forceMobile}>
       <textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}

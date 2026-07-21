@@ -14,7 +14,8 @@ export type IconName =
   | "x" | "arrow-up" | "arrow-right" | "menu"
   | "loader" | "rotate-cw" | "rotate-ccw" | "mic-off"
   | "heart" | "message-circle" | "message-circle-plus" | "info" | "calendar" | "clock"
-  | "more-vertical" | "edit" | "trash" | "flag" | "pin" | "smile" | "instagram" | "plus-circle" | "log-out";
+  | "more-vertical" | "edit" | "trash" | "flag" | "pin" | "smile" | "instagram" | "plus-circle" | "log-out"
+  | "home" | "compass" | "user";
 
 const PATHS: Record<IconName, string> = {
   play: "M6 3l14 9-14 9V3z",
@@ -31,7 +32,8 @@ const PATHS: Record<IconName, string> = {
   volume: "M5 9v6h4l5 4V5L9 9zM17 8a5 5 0 0 1 0 8",
   rewind: "M3 12a9 9 0 1 0 3-6.7M3 4v4h4",
   forward: "M21 12a9 9 0 1 1-3-6.7M21 4v4h-4",
-  settings: "M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM19 12l2 1-2 4-2-1a7 7 0 0 1-2 1l-1 2h-4l-1-2a7 7 0 0 1-2-1l-2 1-2-4 2-1a7 7 0 0 1 0-2L1 8l2-4 2 1a7 7 0 0 1 2-1l1-2h4l1 2a7 7 0 0 1 2 1l2-1 2 4-2 1a7 7 0 0 1 0 2z",
+  settings:
+    "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
   maximize: "M8 3H3v5M21 8V3h-5M16 21h5v-5M3 16v5h5",
   bookmark: "M6 3h12v18l-6-4-6 4z",
   help: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM9 9a3 3 0 0 1 5 2c0 2-3 2-3 4M12 17h.01",
@@ -77,6 +79,9 @@ const PATHS: Record<IconName, string> = {
     "M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zM16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01",
   "plus-circle": "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 8v8M8 12h8",
   "log-out": "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
+  home: "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10",
+  compass: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM15 9l-2 6-6 2 2-6z",
+  user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
 };
 
 const SOLID: IconName[] = ["play", "pause", "square", "star", "more-vertical"];

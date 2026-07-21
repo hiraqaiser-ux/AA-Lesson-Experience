@@ -24,6 +24,8 @@ export interface LessonRowProps {
   hideStatus?: boolean;
   /** Visitor's unlocked section: row is shown but not clickable. */
   disabled?: boolean;
+  /** No horizontal padding + no hover state — the row sits flush against its container (mobile). */
+  flush?: boolean;
 }
 
 /** A single lesson inside a chapter (Video / Practice / Assignment / Audio …). */
@@ -37,6 +39,7 @@ export function LessonRow({
   onClick,
   hideStatus = false,
   disabled = false,
+  flush = false,
 }: LessonRowProps) {
   const meta = TYPE_META[type];
   const rowIcon = icon ?? meta.icon;
@@ -47,9 +50,11 @@ export function LessonRow({
       onClick={onClick}
       disabled={disabled}
       className={[
-        "flex w-full items-center gap-16 rounded-sm border-b border-neutral-900 px-12 py-12 text-left last:border-0",
+        "flex w-full items-start gap-16 rounded-sm border-b border-neutral-900 py-12 text-left last:border-0",
+        flush ? "" : "px-12",
         "transition-colors duration-300 ease-in-out",
-        disabled ? "cursor-default" : "hover:bg-overlay-white-8",
+        !disabled && !flush ? "hover:bg-overlay-white-8" : "",
+        disabled ? "cursor-default" : "",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500",
         status === "locked" ? "opacity-55" : "",
       ].join(" ")}

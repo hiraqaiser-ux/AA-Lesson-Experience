@@ -27,6 +27,8 @@ export const COURSE = {
   startYear: "2026",
   price: "$100",
   priceNote: "One Time Payment",
+  // This batch is full — the enroll CTAs become "Notify Me" (waitlist) instead.
+  seatsFull: true,
 };
 
 export const SECTIONS: Section[] = [

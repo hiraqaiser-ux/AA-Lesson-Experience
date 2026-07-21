@@ -2,38 +2,42 @@
  * NewsfeedPostPage — full-page post detail for the community newsfeed (opened
  * from a feed card instead of a popup). Community NavBar + a back link + the
  * shared PostDetailContent (post on the left, comments + composer on the right)
- * with @mention support. Signed-out actions open the SignInPrompt.
+ * with @mention support. Signed-out actions open the SignInPrompt. The active
+ * persona (Visitor / Student / Teacher / Teacher Assistant) drives the nav
+ * identity, the account switcher, and the identity used for new comments.
  */
 import { useState } from "react";
 import { NavBar, type NavLink } from "../NavBar";
 import { Icon } from "../Icon";
-import { AuthorHeader } from "../discussion/DiscussionParts";
+import { AVATAR_BG, AuthorHeader } from "../discussion/DiscussionParts";
 import { PostDetailContent } from "../discussion/PostDetailContent";
 import { SignInPrompt } from "./SignInPrompt";
 import { goToScreen } from "./communityNav";
+import { PERSONAS, buildAccountSwitcher, type PersonaId } from "../../data/personas";
 import { STUDENTS } from "../../data/newsfeed";
 import type { Post } from "../../data/discussions";
 
 export function NewsfeedPostPage({
   post,
   onBack,
-  signedIn,
-  onSignIn,
-  onSignOut,
+  persona,
+  onSwitchPersona,
 }: {
   post: Post;
   onBack: () => void;
-  signedIn: boolean;
-  onSignIn: () => void;
-  onSignOut: () => void;
+  persona: PersonaId;
+  onSwitchPersona: (id: PersonaId) => void;
 }) {
   const [showSignIn, setShowSignIn] = useState(false);
+  const signedIn = persona !== "visitor";
+  const current = persona !== "visitor" ? PERSONAS[persona] : undefined;
+
   const requireSignIn = () => {
     if (!signedIn) setShowSignIn(true);
     return signedIn;
   };
   const signIn = () => {
-    onSignIn();
+    onSwitchPersona("student");
     setShowSignIn(false);
   };
 
@@ -49,9 +53,12 @@ export function NewsfeedPostPage({
       <NavBar
         visitor={!signedIn}
         onEnroll={signIn}
-        onLogout={onSignOut}
+        onLogout={() => onSwitchPersona("visitor")}
         onHome={onBack}
-        userName="Hira"
+        userName={current?.name ?? "Hira"}
+        avatarUrl={current?.avatarUrl}
+        avatarColorClassName={current ? AVATAR_BG[current.color] : undefined}
+        accountSwitcher={signedIn ? buildAccountSwitcher(persona, onSwitchPersona) : undefined}
         links={links}
         elevateOnScroll
         visitorCta="login-only"
@@ -74,6 +81,7 @@ export function NewsfeedPostPage({
           enrolled={signedIn}
           onRequireEnroll={requireSignIn}
           mentionables={STUDENTS}
+          currentUser={current}
           header={
             <AuthorHeader
               name={post.author}

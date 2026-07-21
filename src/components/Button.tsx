@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "muted";
 type Size = "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
@@ -9,6 +9,8 @@ const VARIANTS: Record<Variant, string> = {
   secondary:
     "bg-transparent text-neutral-0 border border-secondary-800 hover:bg-overlay-white-8",
   ghost: "bg-transparent text-primary-300 underline-offset-2 hover:underline",
+  // Solid, low-emphasis fill for secondary actions that still need a filled pill (e.g. "Sign Out").
+  muted: "bg-secondary-800 text-secondary-50 hover:bg-secondary-700",
 };
 
 const SIZES: Record<Size, string> = {

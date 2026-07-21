@@ -11,12 +11,15 @@ export function ResponsiveModal({
   onClose,
   title,
   children,
+  forceMobile = false,
 }: {
   onClose: () => void;
   title?: string;
   children: ReactNode;
+  /** Always render the BottomSheet variant, ignoring actual window width — for the mobile prototype, which simulates a phone frame inside a browser window that may itself be wide. */
+  forceMobile?: boolean;
 }) {
-  const isDesktop = useIsDesktop();
+  const isDesktop = useIsDesktop() && !forceMobile;
 
   if (isDesktop) {
     return (

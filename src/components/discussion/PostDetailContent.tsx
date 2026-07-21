@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 import { ReactionPill } from "./DiscussionParts";
 import { CommentList } from "./CommentList";
 import { CommentComposer } from "./CommentComposer";
-import type { Comment, Mentionable, Post } from "../../data/discussions";
+import type { AvatarColor, Comment, Mentionable, Post } from "../../data/discussions";
 
 export function PostDetailContent({
   post,
@@ -16,6 +16,7 @@ export function PostDetailContent({
   onRequireEnroll,
   header,
   mentionables,
+  currentUser,
 }: {
   post: Post;
   enrolled: boolean;
@@ -24,6 +25,8 @@ export function PostDetailContent({
   header?: ReactNode;
   /** People who can be @mentioned in comments. Enables mention autocomplete + highlighting. */
   mentionables?: Mentionable[];
+  /** Identity used when posting a new comment. Defaults to "Hira" when omitted. */
+  currentUser?: { name: string; initials: string; color: AvatarColor };
 }) {
   const [comments, setComments] = useState<Comment[]>(post.comments);
   const [value, setValue] = useState("");
@@ -38,7 +41,15 @@ export function PostDetailContent({
     const text = value.trim();
     if (!text) return;
     setComments((c) => [
-      { id: `new-${c.length}`, name: "Hira", initials: "H", color: "blue", time: "Just now", text, likes: 0 },
+      {
+        id: `new-${c.length}`,
+        name: currentUser?.name ?? "Hira",
+        initials: currentUser?.initials ?? "H",
+        color: currentUser?.color ?? "blue",
+        time: "Just now",
+        text,
+        likes: 0,
+      },
       ...c,
     ]);
     setValue("");

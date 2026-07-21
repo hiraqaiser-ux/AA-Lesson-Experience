@@ -8,7 +8,7 @@
  * nested inside another button (invalid + bad a11y).
  */
 import { AuthorHeader, ReactionPill } from "../discussion/DiscussionParts";
-import { ActionMenu } from "../ActionMenu";
+import { ActionMenu, type ActionItem } from "../ActionMenu";
 import type { Post } from "../../data/discussions";
 
 export function FeedPostCard({
@@ -20,18 +20,38 @@ export function FeedPostCard({
   onJoin,
   onOpenSchool,
   onReport,
+  onEdit,
+  avatarSize,
+  enrollLayout,
 }: {
   post: Post;
   onOpen: () => void;
   liked: boolean;
   onLike: () => void;
   onComment: () => void;
-  onJoin: () => void;
+  /** Fired by the Enroll control. Omit when the viewer is already enrolled in this post's school. */
+  onJoin?: () => void;
   /** Fired by clicking the course/school name in the byline. */
   onOpenSchool: () => void;
   onReport: () => void;
+  /** Adds "Edit" to the kebab menu when provided — omit for viewers who shouldn't see it (e.g. a Visitor). */
+  onEdit?: () => void;
+  avatarSize?: number;
+  /** See AuthorHeader — "inline" (default, web byline) or "stacked" (mobile post header spec). */
+  enrollLayout?: "inline" | "stacked";
 }) {
   const long = post.text.length > 400;
+  // "stacked" only ever comes from the mobile prototype — reuse it as the "force bottom sheet" signal
+  // (its simulated phone frame can sit inside an actual wide browser window).
+  const forceMobile = enrollLayout === "stacked";
+  const copyLink = () => {
+    const url = `${window.location.origin}${window.location.pathname}?post=${post.id}`;
+    navigator.clipboard?.writeText(url).catch(() => {});
+  };
+  const menuItems: ActionItem[] = [];
+  if (onEdit) menuItems.push({ label: "Edit", icon: "edit", onSelect: onEdit });
+  menuItems.push({ label: "Report", icon: "flag", onSelect: onReport });
+  menuItems.push({ label: "Copy Link", icon: "clipboard", onSelect: copyLink });
   return (
     <article className="flex w-full flex-col gap-24" aria-label={`Post by ${post.author}`}>
       <div className="flex flex-col gap-12">
@@ -46,12 +66,9 @@ export function FeedPostCard({
           school={post.school}
           onJoin={onJoin}
           onOpenSchool={onOpenSchool}
-          menu={
-            <ActionMenu
-              label="Post actions"
-              items={[{ label: "Report", icon: "flag", onSelect: onReport }]}
-            />
-          }
+          avatarSize={avatarSize}
+          enrollLayout={enrollLayout}
+          menu={<ActionMenu label="Post actions" items={menuItems} forceMobile={forceMobile} />}
         />
 
         <button type="button" onClick={onOpen} className="flex flex-col gap-8 text-left">

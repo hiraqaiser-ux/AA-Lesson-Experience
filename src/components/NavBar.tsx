@@ -15,6 +15,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
+import { NotifyMeButton } from "./NotifyMeButton";
 
 /** A primary navigation link (e.g. Home / Courses / Blogs). */
 export interface NavLink {
@@ -25,6 +26,20 @@ export interface NavLink {
   href?: string;
   /** Highlights the current section. */
   active?: boolean;
+}
+
+/** One entry in the account/persona switcher. */
+export interface AccountSwitcherOption {
+  id: string;
+  label: string;
+  /** Highlights this option as the currently active account. */
+  active: boolean;
+  onSelect: () => void;
+}
+
+/** "Switch account" section in the profile dropdown/drawer — e.g. previewing different personas. */
+export interface AccountSwitcher {
+  options: AccountSwitcherOption[];
 }
 
 export function NavBar({
@@ -38,6 +53,12 @@ export function NavBar({
   elevateOnScroll = false,
   visitorCta = "login-enroll",
   mobileFooter,
+  avatarUrl,
+  avatarColorClassName,
+  accountSwitcher,
+  seatsFull = false,
+  waitlisted = false,
+  onNotify,
 }: {
   userName?: string;
   /** Custom drawer content for the hamburger menu. Falls back to Blog + Log out. */
@@ -66,6 +87,18 @@ export function NavBar({
   visitorCta?: "login-enroll" | "login-only";
   /** Extra content rendered at the bottom of the mobile drawer (e.g. a callout card). */
   mobileFooter?: ReactNode;
+  /** Optional profile-pill photo; falls back to the initials chip when omitted. */
+  avatarUrl?: string;
+  /** Background class for the initials chip when no `avatarUrl` (defaults to bg-secondary-600). */
+  avatarColorClassName?: string;
+  /** "Switch account" section rendered above "Log out" in the dropdown/drawer. */
+  accountSwitcher?: AccountSwitcher;
+  /** When the course batch is full, the "Enroll Now" CTA becomes "Notify Me". */
+  seatsFull?: boolean;
+  /** Whether the visitor has already joined the waitlist. */
+  waitlisted?: boolean;
+  /** Opens the Enrollment Unavailable popup (the "Notify Me" flow). */
+  onNotify?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -161,7 +194,7 @@ export function NavBar({
           {!links && (
             <a
               href="#"
-              className="hidden rounded-sm px-12 py-8 text-md text-neutral-0 transition-colors hover:text-secondary-200 lg:block"
+              className="hidden rounded-sm px-12 py-8 text-lg text-neutral-0 transition-colors hover:text-secondary-200 lg:block"
             >
               Blog
             </a>
@@ -180,17 +213,27 @@ export function NavBar({
               <>
                 <button
                   type="button"
+                  onClick={onEnroll}
                   className="hidden rounded-full bg-secondary-800 px-20 py-8 text-sm font-medium text-neutral-0 transition-colors hover:bg-secondary-700 lg:block"
                 >
                   Login
                 </button>
-                <button
-                  type="button"
-                  onClick={onEnroll}
-                  className="rounded-full bg-primary-500 px-20 py-8 text-sm font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
-                >
-                  Enroll Now
-                </button>
+                {seatsFull ? (
+                  <NotifyMeButton
+                    joined={waitlisted}
+                    onNotify={onNotify ?? (() => {})}
+                    className="px-20 py-8 text-sm"
+                    tooltipSide="bottom"
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={onEnroll}
+                    className="rounded-full bg-primary-500 px-20 py-8 text-sm font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+                  >
+                    Enroll Now
+                  </button>
+                )}
               </>
             )
           ) : (
@@ -201,15 +244,25 @@ export function NavBar({
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
                 className={[
-                  "flex items-center gap-8 rounded-full bg-secondary-800 p-8 lg:py-8 lg:pl-8 lg:pr-12",
+                  "flex items-center gap-8 rounded-lg bg-secondary-800 p-8 lg:py-8 lg:pl-8 lg:pr-12",
                   "transition-colors hover:bg-secondary-700",
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500",
                 ].join(" ")}
               >
-                <span className="grid size-28 place-items-center rounded-full bg-secondary-600 text-xs font-semibold text-neutral-0">
-                  {userName.charAt(0).toUpperCase()}
-                </span>
-                <span className="hidden text-sm font-medium text-neutral-0 lg:block">{userName}</span>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="size-32 shrink-0 rounded-full object-cover" />
+                ) : (
+                  <span
+                    className={`grid size-32 place-items-center rounded-full text-md font-bold ${
+                      avatarColorClassName
+                        ? `${avatarColorClassName} text-neutral-0`
+                        : "bg-secondary-200 text-neutral-900"
+                    }`}
+                  >
+                    {userName.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <span className="hidden text-sm font-bold text-neutral-0 lg:block">{userName}</span>
                 <Icon
                   name="chevron-down"
                   size={16}
@@ -220,8 +273,32 @@ export function NavBar({
               {menuOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 top-full z-50 mt-4 flex w-[180px] flex-col rounded-md border border-secondary-800 bg-secondary-1000 p-4 shadow-xl"
+                  className="absolute right-0 top-full z-50 mt-4 flex w-[220px] flex-col rounded-md border border-secondary-800 bg-secondary-1000 p-4 shadow-xl"
                 >
+                  {accountSwitcher && (
+                    <>
+                      {accountSwitcher.options.map((opt) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          role="menuitemradio"
+                          aria-checked={opt.active}
+                          onClick={() => {
+                            setMenuOpen(false);
+                            opt.onSelect();
+                          }}
+                          className={[
+                            "flex items-center justify-between gap-12 rounded-sm px-12 py-8 text-left text-md transition-colors hover:bg-overlay-white-8",
+                            opt.active ? "font-semibold text-primary-500" : "text-neutral-0",
+                          ].join(" ")}
+                        >
+                          {opt.label}
+                          {opt.active && <Icon name="check" size={16} />}
+                        </button>
+                      ))}
+                      <hr className="my-4 border-0 border-t border-secondary-900" />
+                    </>
+                  )}
                   <button
                     type="button"
                     role="menuitem"
@@ -312,21 +389,36 @@ export function NavBar({
                   <>
                     <button
                       type="button"
-                      onClick={close}
-                      className="rounded-full bg-secondary-800 px-20 py-12 text-md font-medium text-neutral-0 transition-colors hover:bg-secondary-700"
-                    >
-                      Login
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => {
                         onEnroll?.();
                         close();
                       }}
-                      className="rounded-full bg-primary-500 px-20 py-12 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+                      className="rounded-full bg-secondary-800 px-20 py-12 text-md font-medium text-neutral-0 transition-colors hover:bg-secondary-700"
                     >
-                      Enroll Now
+                      Login
                     </button>
+                    {seatsFull ? (
+                      <NotifyMeButton
+                        joined={waitlisted}
+                        onNotify={() => {
+                          onNotify?.();
+                          close();
+                        }}
+                        className="w-full px-20 py-12 text-md"
+                        showCaption
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onEnroll?.();
+                          close();
+                        }}
+                        className="rounded-full bg-primary-500 px-20 py-12 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+                      >
+                        Enroll Now
+                      </button>
+                    )}
                   </>
                 )}
               </nav>
@@ -359,9 +451,35 @@ export function NavBar({
                     Blog
                   </a>
                 )}
+                {accountSwitcher && (
+                  <>
+                    {accountSwitcher.options.map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={opt.active}
+                        onClick={() => {
+                          opt.onSelect();
+                          close();
+                        }}
+                        className={[
+                          "flex items-center justify-between gap-12 rounded-sm px-12 py-12 text-left text-md transition-colors hover:bg-overlay-white-8",
+                          opt.active ? "font-semibold text-primary-500" : "text-neutral-0",
+                        ].join(" ")}
+                      >
+                        {opt.label}
+                        {opt.active && <Icon name="check" size={16} />}
+                      </button>
+                    ))}
+                  </>
+                )}
                 <button
                   type="button"
-                  onClick={close}
+                  onClick={() => {
+                    onLogout?.();
+                    close();
+                  }}
                   className="rounded-sm px-12 py-12 text-left text-md text-neutral-0 transition-colors hover:bg-overlay-white-8"
                 >
                   Log out

@@ -4,7 +4,8 @@ import { Icon, type IconName } from "../Icon";
 import { Button } from "../Button";
 import type { AvatarColor, Role } from "../../data/discussions";
 
-const AVATAR_BG: Record<AvatarColor, string> = {
+/** Tailwind bg class per identity colour — exported so other UI (e.g. the account switcher) can match it. */
+export const AVATAR_BG: Record<AvatarColor, string> = {
   teal: "bg-avatar-teal",
   red: "bg-avatar-red",
   orange: "bg-warning",
@@ -76,6 +77,7 @@ export function AuthorHeader({
   onJoin,
   onOpenSchool,
   menu,
+  enrollLayout = "inline",
 }: {
   name: string;
   initials: string;
@@ -88,50 +90,80 @@ export function AuthorHeader({
   avatarUrl?: string;
   /** School the post belongs to — shown underlined below the time. */
   school?: string;
-  /** Fired by the right-aligned "Enroll Now" button next to the school name. */
+  /** Fired by the Enroll control. Omit when the viewer is already enrolled — the control simply doesn't render. */
   onJoin?: () => void;
   /** Fired by clicking the school/course name itself (e.g. opens its detail page). */
   onOpenSchool?: () => void;
   /** Optional right-aligned actions (e.g. a kebab menu). */
   menu?: ReactNode;
+  /**
+   * "inline" (default): Enroll renders as a pill beside the kebab — the web byline.
+   * "stacked": Enroll renders as a plain underlined text link immediately before
+   * the kebab (both top-right) — the mobile post header spec (Figma nodes
+   * 44973:39121 "Enrolled course" / 44973:39099 "Unenrolled course"), adjusted per
+   * feedback to sit next to the kebab rather than on its own line under the meta row.
+   */
+  enrollLayout?: "inline" | "stacked";
 }) {
   const resolved: Role | undefined = role ?? (isTeacher ? "teacher" : undefined);
+  const stacked = enrollLayout === "stacked";
   return (
     <div className="flex items-start gap-8">
       <Avatar initials={initials} color={color} size={avatarSize} imageUrl={avatarUrl} />
-      <div className="flex min-w-0 flex-1 flex-col gap-4">
+      <div className={`flex min-w-0 flex-1 flex-col ${stacked ? "gap-8" : "gap-4"}`}>
         <div className="flex flex-wrap items-center gap-8">
           <span className="text-lg font-bold text-text-primary">{name}</span>
-          {resolved && <RolePill role={resolved} />}
+          {!stacked && resolved && <RolePill role={resolved} />}
         </div>
         {school ? (
-          <span className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm text-neutral-400">
-            <span>{time}</span>
-            <span aria-hidden className="text-secondary-600">
+          <span className="flex min-w-0 items-center gap-8 text-sm text-neutral-400">
+            <span className="shrink-0">{time}</span>
+            <span aria-hidden className="shrink-0 text-secondary-600">
               ·
             </span>
             {onOpenSchool ? (
               <button
                 type="button"
                 onClick={onOpenSchool}
-                className="rounded-sm text-secondary-200 underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500"
+                className="min-w-0 flex-1 truncate rounded-sm text-left text-secondary-200 underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500"
               >
                 {school}
               </button>
             ) : (
-              <span className="text-secondary-200 underline-offset-2 hover:underline">{school}</span>
+              <span className="min-w-0 flex-1 truncate text-secondary-200 underline-offset-2 hover:underline">
+                {school}
+              </span>
             )}
           </span>
         ) : (
           <span className="text-sm text-neutral-400">{time}</span>
         )}
       </div>
-      {school && onJoin && (
-        <Button variant="ghost" size="md" onClick={onJoin} className="shrink-0 !pt-0">
-          Enroll Now
-        </Button>
-      )}
-      {menu}
+      {stacked
+        ? ((school && onJoin) || menu) && (
+            <div className="flex shrink-0 items-center gap-8">
+              {school && onJoin && (
+                <button
+                  type="button"
+                  onClick={onJoin}
+                  className="rounded-sm text-md font-semibold text-primary-300 underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500"
+                >
+                  Enroll
+                </button>
+              )}
+              {menu}
+            </div>
+          )
+        : ((school && onJoin) || menu) && (
+            <div className="flex shrink-0 items-center gap-4">
+              {school && onJoin && (
+                <Button variant="ghost" size="md" onClick={onJoin} className="shrink-0">
+                  Enroll Now
+                </Button>
+              )}
+              {menu}
+            </div>
+          )}
     </div>
   );
 }

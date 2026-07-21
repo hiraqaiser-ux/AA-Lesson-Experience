@@ -12,6 +12,7 @@ import { Icon } from "../components/Icon";
 import { AuthorHeader, ReactionPill } from "../components/discussion/DiscussionParts";
 import { PostDetailModal } from "../components/discussion/PostDetailModal";
 import { EnrollPrompt } from "../components/discussion/EnrollPrompt";
+import { WaitlistNoticeModal } from "../components/discussion/WaitlistNoticeModal";
 import { CreatePostBox } from "../components/discussion/CreatePostBox";
 import { PostComposer } from "../components/discussion/PostComposer";
 import { EmptyDiscussions } from "../components/discussion/EmptyDiscussions";
@@ -140,23 +141,31 @@ export function DiscussionsScreen({
   onOpenPost,
   enrolled,
   onEnroll,
+  waitlisted = false,
 }: {
   onOpenPost?: (post: Post) => void;
   enrolled: boolean;
   onEnroll: () => void;
   /** Accepted for API compatibility; the course side-card that used it was removed. */
   onUnenroll?: () => void;
+  /** On the waitlist (full course) — participation shows a waitlist notice, not the enroll prompt. */
+  waitlisted?: boolean;
 }) {
   const isDesktop = useIsDesktop();
   const [posts, setPosts] = useState<Post[]>(POSTS);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [openPost, setOpenPost] = useState<Post | null>(null);
   const [showEnroll, setShowEnroll] = useState(false);
+  const [showWaitlist, setShowWaitlist] = useState(false);
   const [dialog, setDialog] = useState<DialogState>(null);
   const [showCreateSheet, setShowCreateSheet] = useState(false);
 
+  // Not enrolled → gate participation. Waitlisted users can't enrol (full
+  // batch), so they get a waitlist notice instead of the enroll prompt.
   const requireEnroll = () => {
-    if (!enrolled) setShowEnroll(true);
+    if (enrolled) return;
+    if (waitlisted) setShowWaitlist(true);
+    else setShowEnroll(true);
   };
   const handleEnroll = () => {
     onEnroll();
@@ -265,6 +274,7 @@ export function DiscussionsScreen({
         />
       )}
       {showEnroll && <EnrollPrompt onEnroll={handleEnroll} onClose={() => setShowEnroll(false)} />}
+      {showWaitlist && <WaitlistNoticeModal onClose={() => setShowWaitlist(false)} />}
 
       {dialog?.type === "edit" && (
         <EditPostDialog

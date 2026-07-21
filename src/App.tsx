@@ -4,6 +4,7 @@ import { CourseDetail } from "./screens/CourseDetail";
 import { LessonExperience } from "./screens/lesson/LessonExperience";
 import { NewsfeedScreen } from "./screens/NewsfeedScreen";
 import { CoursesScreen } from "./screens/CoursesScreen";
+import { MobileNewsfeedScreen } from "./screens/mobile/MobileNewsfeedScreen";
 import { PostDetailPage } from "./components/discussion/PostDetailPage";
 import type { Post } from "./data/discussions";
 
@@ -50,6 +51,16 @@ export default function App() {
     return (
       <>
         {screenParam === "courses" ? <CoursesScreen /> : <NewsfeedScreen />}
+        {import.meta.env.DEV && <Agentation />}
+      </>
+    );
+  }
+
+  // Mobile-app UI-alignment preview (Home + Explore) — see MOBILE_ALIGNMENT_CONTEXT.md.
+  if (screenParam === "mobile") {
+    return (
+      <>
+        <MobileNewsfeedScreen />
         {import.meta.env.DEV && <Agentation />}
       </>
     );

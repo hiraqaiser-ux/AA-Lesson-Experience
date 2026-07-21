@@ -6,9 +6,16 @@ import { GlassTabs } from "../components/GlassTabs";
 import { FaqItem } from "../components/FaqItem";
 import { Icon } from "../components/Icon";
 import { SchoolInfoCard } from "../components/SchoolInfoCard";
+import { NotifyMeButton } from "../components/NotifyMeButton";
+import { NotifyMeModal } from "../components/NotifyMeModal";
+import { LoginModal } from "../components/LoginModal";
+import { useWaitlist } from "../hooks/useWaitlist";
+import { AVATAR_BG } from "../components/discussion/DiscussionParts";
 import { LessonsScreen } from "./LessonsScreen";
 import { DiscussionsScreen } from "./DiscussionsScreen";
 import { communityNavLinks, goToScreen } from "../components/newsfeed/communityNav";
+import { usePersona } from "../hooks/usePersona";
+import { PERSONAS, buildAccountSwitcher } from "../data/personas";
 import { COURSE, FAQS } from "../data/course";
 
 const TABS = ["About", "Lessons", "Discussions"];
@@ -95,6 +102,53 @@ export function CourseDetail({
   const [activeSection, setActiveSection] = useState("overview");
   const tabsRef = useRef<HTMLDivElement>(null);
 
+  // Waitlist ("Notify Me") flow — active only when this batch is full and the
+  // visitor hasn't enrolled. The popup confirms before joining the waitlist.
+  const [waitlisted, joinWaitlist, leaveWaitlist] = useWaitlist(COURSE.school);
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const openNotify = () => setNotifyOpen(true);
+  const confirmNotify = () => {
+    joinWaitlist();
+    setNotifyOpen(false);
+  };
+
+  // Persona system only applies in communityMode (reached via the newsfeed); the
+  // default entry keeps using the `enrolled`/`onEnroll`/`onUnenroll` props as-is.
+  const [persona, setPersona] = usePersona();
+  const communityEnrolled = persona !== "visitor";
+  const currentPersona = communityMode && communityEnrolled ? PERSONAS[persona] : undefined;
+  const effectiveEnrolled = communityMode ? communityEnrolled : enrolled;
+  // "Logged in" is broader than "enrolled": joining the waitlist logs the user
+  // in (profile nav bar) without enrolling them in the (full) course.
+  const loggedIn = effectiveEnrolled || waitlisted;
+  // Enrolling requires logging in first: the CTA opens the login popup, and the
+  // actual enroll runs only on a successful login.
+  const doEnroll = communityMode ? () => setPersona("student") : onEnroll;
+  // Logout drops enrollment AND the waitlist, returning to the Notify Me state.
+  const handleLogout = () => {
+    leaveWaitlist();
+    if (communityMode) setPersona("visitor");
+    else onUnenroll();
+  };
+
+  const [loginOpen, setLoginOpen] = useState(false);
+  const handleEnroll = () => setLoginOpen(true);
+  const onLoginSuccess = () => {
+    setLoginOpen(false);
+    doEnroll();
+  };
+
+  // Full batch → visitors see "Notify Me" instead of "Enroll Now". The
+  // `?seats=full|open` query param overrides the data flag so a single link can
+  // demo both flows (defaults to COURSE.seatsFull when the param is absent).
+  const seatsParam =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("seats")
+      : null;
+  const seatsFullFlag =
+    seatsParam === "full" ? true : seatsParam === "open" ? false : COURSE.seatsFull === true;
+  const seatsFull = !effectiveEnrolled && seatsFullFlag;
+
   // Sticky-at-bottom tabs: dock a floating pill as soon as the inline tabs
   // scroll up near the top of the viewport (rootMargin pushes the trigger early).
   useEffect(() => {
@@ -136,12 +190,12 @@ export function CourseDetail({
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <div className={`min-h-full bg-secondary-3 ${!enrolled ? "pb-[120px] lg:pb-0" : ""}`}>
+    <div className={`min-h-full bg-secondary-3 ${!effectiveEnrolled ? "pb-[120px] lg:pb-0" : ""}`}>
       <NavBar
-        userName="Hira"
-        visitor={!enrolled}
-        onEnroll={onEnroll}
-        onLogout={onUnenroll}
+        userName={currentPersona?.name ?? "Hira"}
+        visitor={!loggedIn}
+        onEnroll={handleEnroll}
+        onLogout={handleLogout}
         onHome={
           communityMode
             ? () => goToScreen("newsfeed")
@@ -153,6 +207,14 @@ export function CourseDetail({
         links={communityMode ? communityNavLinks("courses") : undefined}
         elevateOnScroll={communityMode}
         visitorCta={communityMode ? "login-only" : "login-enroll"}
+        avatarUrl={currentPersona?.avatarUrl}
+        avatarColorClassName={currentPersona ? AVATAR_BG[currentPersona.color] : undefined}
+        accountSwitcher={
+          communityMode && communityEnrolled ? buildAccountSwitcher(persona, setPersona) : undefined
+        }
+        seatsFull={seatsFull}
+        waitlisted={waitlisted}
+        onNotify={openNotify}
       />
 
       {/* Hero */}
@@ -202,9 +264,14 @@ export function CourseDetail({
         </div>
 
         {/* Visitor-only "School Details" banner — sits above the tabs. */}
-        {!enrolled && (
+        {!effectiveEnrolled && (
           <div className="mx-auto w-full max-w-[840px]">
-            <SchoolInfoCard onEnroll={onEnroll} />
+            <SchoolInfoCard
+              onEnroll={handleEnroll}
+              seatsFull={seatsFull}
+              waitlisted={waitlisted}
+              onNotify={openNotify}
+            />
           </div>
         )}
       </div>
@@ -214,20 +281,21 @@ export function CourseDetail({
         ref={tabsRef}
         className="sticky top-[63px] z-30 border-b border-secondary-900 bg-secondary-3 lg:static lg:top-auto lg:z-auto lg:border-b-0 lg:bg-transparent"
       >
-        <div className="mx-auto flex w-full justify-center px-16 py-8 md:px-40 lg:px-[92px]">
+        <div className="mx-auto flex w-full justify-center px-16 py-8 md:px-40 lg:px-[92px] lg:py-40">
           <GlassTabs tabs={TABS} active={tab} onChange={setTab} dot="Discussions" />
         </div>
       </div>
 
       {/* Tab content */}
       {tab === "Lessons" ? (
-        <LessonsScreen onOpenLesson={onOpenLesson} enrolled={enrolled} />
+        <LessonsScreen onOpenLesson={onOpenLesson} enrolled={effectiveEnrolled} />
       ) : tab === "Discussions" ? (
         <DiscussionsScreen
           onOpenPost={onOpenPost}
-          enrolled={enrolled}
-          onEnroll={onEnroll}
-          onUnenroll={onUnenroll}
+          enrolled={effectiveEnrolled}
+          onEnroll={handleEnroll}
+          onUnenroll={handleLogout}
+          waitlisted={waitlisted}
         />
       ) : (
         <div className="mx-auto w-full px-16 pt-24 md:px-40 lg:px-[92px]">
@@ -344,21 +412,37 @@ export function CourseDetail({
 
       <Footer />
 
-      {/* Mobile visitor: sticky bottom Enroll bar (price + CTA). */}
-      {!enrolled && (
+      {/* Mobile visitor: sticky bottom bar. Full batch → "Notify Me" + waitlist
+          caption; otherwise the Enroll CTA + price. */}
+      {!effectiveEnrolled && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-900 bg-secondary-1000 px-16 pb-24 pt-12 lg:hidden">
-          <button
-            type="button"
-            onClick={onEnroll}
-            className="flex h-48 w-full items-center justify-center rounded-full bg-primary-500 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
-          >
-            Enroll Now
-          </button>
-          <p className="mt-8 text-center text-md text-secondary-300">
-            <span className="font-bold text-primary-500">{COURSE.price}</span> ({COURSE.priceNote})
-          </p>
+          {seatsFull ? (
+            <NotifyMeButton
+              joined={waitlisted}
+              onNotify={openNotify}
+              className="h-48 w-full text-md"
+              showCaption
+            />
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handleEnroll}
+                className="flex h-48 w-full items-center justify-center rounded-full bg-primary-500 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400"
+              >
+                Enroll Now
+              </button>
+              <p className="mt-8 text-center text-md text-secondary-300">
+                <span className="font-bold text-primary-500">{COURSE.price}</span> ({COURSE.priceNote})
+              </p>
+            </>
+          )}
         </div>
       )}
+
+      {notifyOpen && <NotifyMeModal onClose={() => setNotifyOpen(false)} onConfirm={confirmNotify} />}
+
+      {loginOpen && <LoginModal onClose={() => setLoginOpen(false)} onSuccess={onLoginSuccess} />}
 
       {/* Sticky docked tabs (float in on scroll) — desktop only; mobile uses the sticky tab bar. */}
       <div

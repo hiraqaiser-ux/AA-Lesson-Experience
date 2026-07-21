@@ -15,10 +15,19 @@ export interface ChapterCardProps {
   onSelectLesson?: (lessonId: string) => void;
   /** Visitor view: hide the chapter status badge + per-lesson status icons. */
   hideStatus?: boolean;
+  /** Hide just the chapter status badge, independent of hideStatus — the per-lesson status icons stay. */
+  hideBadge?: boolean;
   /** Visitor's unlocked section: lessons are shown but not clickable. */
   disableLessons?: boolean;
   /** Override the open-on-mount default (otherwise: open unless completed). */
   defaultOpen?: boolean;
+  /** Lesson rows sit flush against the card edge (no side padding, no hover state) — mobile. */
+  flushLessons?: boolean;
+  /** Chapter title at 16px instead of the default 18px — mobile. */
+  smallTitle?: boolean;
+  /** Matches the mobile Lesson tab Figma frame: 20px header/lessons gap (vs 16px)
+   *  and a 24px chevron (vs 20px). */
+  figmaSpacing?: boolean;
 }
 
 /**
@@ -38,13 +47,23 @@ export function ChapterCard({
   chapterIdx = 0,
   onSelectLesson,
   hideStatus = false,
+  hideBadge = false,
   disableLessons = false,
   defaultOpen,
+  flushLessons = false,
+  smallTitle = false,
+  figmaSpacing = false,
 }: ChapterCardProps) {
   const [open, setOpen] = useState(defaultOpen ?? status !== "completed");
+  const showBadge = !hideStatus && !hideBadge;
 
   return (
-    <div className="flex flex-col gap-16 rounded-md border border-secondary-900 p-16 transition duration-300 ease-in-out hover:border-secondary-800">
+    <div
+      className={[
+        "flex flex-col rounded-md border border-secondary-900 p-16 transition duration-300 ease-in-out hover:border-secondary-800",
+        figmaSpacing ? "gap-20" : "gap-16",
+      ].join(" ")}
+    >
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -53,9 +72,11 @@ export function ChapterCard({
       >
         {/* Title + meta line; the badge stacks below here on mobile only. */}
         <span className="flex min-w-0 flex-1 flex-col gap-8 md:gap-2">
-          <span className="text-lg font-semibold text-neutral-0">{title}</span>
+          <span className={["font-semibold text-neutral-0", smallTitle ? "text-md" : "text-lg"].join(" ")}>
+            {title}
+          </span>
           <span className="text-sm text-secondary-300">{desc}</span>
-          {!hideStatus && (
+          {showBadge && (
             <span className="md:hidden">
               <StatusBadge status={status} />
             </span>
@@ -63,14 +84,14 @@ export function ChapterCard({
         </span>
 
         {/* Status badge — desktop only, on the top row beside the chevron. */}
-        {!hideStatus && (
+        {showBadge && (
           <span className="hidden shrink-0 md:inline-flex">
             <StatusBadge status={status} />
           </span>
         )}
         <Icon
           name={open ? "chevron-up" : "chevron-down"}
-          size={20}
+          size={figmaSpacing ? 24 : 20}
           className="mt-2 shrink-0 text-secondary-300"
         />
       </button>
@@ -83,6 +104,7 @@ export function ChapterCard({
               {...l}
               hideStatus={hideStatus}
               disabled={disableLessons}
+              flush={flushLessons}
               onClick={
                 disableLessons
                   ? undefined

@@ -4,8 +4,22 @@
  * "Enroll Now" CTA. Subtle glass gradient on a secondary-900 stroke.
  */
 import { COURSE } from "../data/course";
+import { NotifyMeButton } from "./NotifyMeButton";
 
-export function SchoolInfoCard({ onEnroll }: { onEnroll: () => void }) {
+export function SchoolInfoCard({
+  onEnroll,
+  seatsFull = false,
+  waitlisted = false,
+  onNotify,
+}: {
+  onEnroll: () => void;
+  /** When the batch is full, the Enroll CTA becomes "Notify Me". */
+  seatsFull?: boolean;
+  /** Whether the visitor already joined this course's waitlist. */
+  waitlisted?: boolean;
+  /** Opens the Enrollment Unavailable popup. */
+  onNotify?: () => void;
+}) {
   return (
     <div
       className="flex flex-col gap-20 rounded-lg border border-secondary-900 p-24 md:flex-row md:items-center md:justify-between"
@@ -35,13 +49,23 @@ export function SchoolInfoCard({ onEnroll }: { onEnroll: () => void }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onEnroll}
-        className="hidden h-48 shrink-0 items-center justify-center rounded-full bg-primary-500 px-20 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400 lg:flex"
-      >
-        Enroll Now
-      </button>
+      {seatsFull ? (
+        <div className="hidden shrink-0 lg:block">
+          <NotifyMeButton
+            joined={waitlisted}
+            onNotify={onNotify ?? (() => {})}
+            className="h-48 px-20 text-md"
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={onEnroll}
+          className="hidden h-48 shrink-0 items-center justify-center rounded-full bg-primary-500 px-20 text-md font-semibold text-secondary-1000 transition-colors hover:bg-primary-400 lg:flex"
+        >
+          Enroll Now
+        </button>
+      )}
     </div>
   );
 }
